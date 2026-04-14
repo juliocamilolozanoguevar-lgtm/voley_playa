@@ -1,13 +1,13 @@
-package com.voley_playa_diloz.voleyplaya;
+package com.senati.gotagota;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VoleyplayaApplication {
+public class GotagotaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VoleyplayaApplication.class, args);
+		SpringApplication.run(GotagotaApplication.class, args);
 	}
 
 }

@@ -1,10 +1,10 @@
-package com.voley_playa_diloz.voleyplaya;
+package com.senati.gotagota;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class VoleyplayaApplicationTests {
+class GotagotaApplicationTests {
 
 	@Test
 	void contextLoads() {
