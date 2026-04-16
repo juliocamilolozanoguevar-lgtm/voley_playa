@@ -1,13 +1,13 @@
-package com.senati.gotagota;
+package com.senati.voley;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GotagotaApplication {
+public class VoleyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GotagotaApplication.class, args);
+		SpringApplication.run(VoleyApplication.class, args);
 	}
 
 }
