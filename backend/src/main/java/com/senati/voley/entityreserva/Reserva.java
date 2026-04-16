@@ -1,7 +1,7 @@
 package com.senati.voley.entityreserva;
 
 import com.senati.voley.entity.Cliente;
-import com.senati.voley.entity.Cancha;
+import com.senati.voley.entitycancha.Cancha;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
