@@ -61,35 +61,33 @@ CREATE DATABASE IF NOT EXISTS voley_diloz;
 USE voley_diloz;
 
 -- 2. Tabla Cliente
--- Contiene los datos básicos de la persona
+-- El DNI se ubica aquí para identificar a la persona físicamente.
 CREATE TABLE cliente (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    dni CHAR(8) NOT NULL UNIQUE, -- Agregado aquí: Identificador único de la persona
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB;
 
 -- 3. Tabla Usuario
--- Gestión de accesos. Nota: password es de 255 para el hash de BCrypt.
+-- Gestión de credenciales vinculadas a un cliente existente.
 CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     id_cliente INT UNIQUE,
-    -- Relación sin borrado en cascada (RESTRICT por defecto)
     CONSTRAINT fk_usuario_cliente FOREIGN KEY (id_cliente) 
         REFERENCES cliente(id_cliente)
 ) ENGINE=InnoDB;
 
--- 4. Tabla Cancha
--- Información de las canchas disponibles en Diloz
+-- 4. Tabla Cancha (Mantiene tu estructura anterior)
 CREATE TABLE cancha (
     id_cancha INT AUTO_INCREMENT PRIMARY KEY,
     nombre_cancha VARCHAR(50) NOT NULL,
     descripcion VARCHAR(200)
 ) ENGINE=InnoDB;
 
--- 5. Tabla Reserva
--- Lógica del calendario de voley playa
+-- 5. Tabla Reserva (Lógica de calendario)
 CREATE TABLE reserva (
     id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     fecha DATE NOT NULL,
@@ -97,9 +95,19 @@ CREATE TABLE reserva (
     hora_fin TIME NOT NULL,
     id_cliente INT,
     id_cancha INT,
-    -- Relación sin cascada: Si se borra el cliente, se bloquea la acción para proteger la reserva
     CONSTRAINT fk_reserva_cliente FOREIGN KEY (id_cliente) 
         REFERENCES cliente(id_cliente),
     CONSTRAINT fk_reserva_cancha FOREIGN KEY (id_cancha) 
         REFERENCES cancha(id_cancha)
 ) ENGINE=InnoDB;
+
+-- ==============================================================
+-- DATOS DE PRUEBA ACTUALIZADOS
+-- ==============================================================
+INSERT INTO cliente (dni, nombre, apellido) VALUES ('74581236', 'Julio', 'Lozano');
+
+-- El usuario ahora solo gestiona el acceso
+INSERT INTO usuario (username, password, id_cliente) 
+VALUES ('admin', 'admin123', 1);
+
+INSERT INTO cancha (nombre_cancha, descripcion) VALUES ('Cancha 1', 'Arena de playa premium');
