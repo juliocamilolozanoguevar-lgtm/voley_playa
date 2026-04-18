@@ -1,0 +1,55 @@
+body {
+    background-color: #1a1d20; /* Fondo más oscuro que el sidebar */
+    height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background-color: #212529; /* Mismo color que el Sidebar */
+    border-radius: 20px;
+    border: 1px solid #343a40;
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background-color: #2c3136;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 2px solid #0dcaf0;
+}
+
+/* Estilo de los Inputs */
+.form-control:focus {
+    background-color: #2c3136;
+    border-color: #0dcaf0;
+    color: white;
+    box-shadow: none;
+}
+
+.input-group-text {
+    border-right: none;
+}
+
+.form-control {
+    border-left: none;
+}
+
+/* Botón personalizado */
+.btn-info {
+    background-color: #0dcaf0;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-info:hover {
+    background-color: #0baccc;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 202, 240, 0.3);
+}

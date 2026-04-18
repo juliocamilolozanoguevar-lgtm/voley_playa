@@ -8,25 +8,20 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     try {
         const response = await fetch('http://localhost:8080/api/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
 
         const data = await response.json();
 
         if (response.ok && data.status === "ok") {
-            // Guardamos el nombre que viene del Backend (Julio Lozano, etc.)
+            // Guardamos el nombre para saludar en el Dashboard
             localStorage.setItem('nombreUsuario', data.nombre);
-            // Redirigimos al Dashboard
-            window.location.href = "index.html";
+            window.location.href = "dashboard.html"; 
         } else {
-            // Mostrar error
             errorMsg.classList.remove('d-none');
         }
     } catch (error) {
-        console.error("Error de conexión:", error);
-        alert("No se pudo conectar con el servidor. ¿Está encendido IntelliJ?");
+        alert("Error: No se pudo conectar con IntelliJ. Verifica que el servidor esté corriendo.");
     }
 });
