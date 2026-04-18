@@ -1,4 +1,4 @@
-package com.senati.voley.entitycancha;
+package com.senati.voley.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,5 +16,5 @@ public class Cancha {
     private String nombre; // Ejemplo: "Cancha Principal"
 
     @Column(nullable = false)
-    private String tipo; // Ejemplo: "Arena" o "Sintético"
+    private String descripcion; // Ejemplo: "Arena" o "Sintético"
 }
