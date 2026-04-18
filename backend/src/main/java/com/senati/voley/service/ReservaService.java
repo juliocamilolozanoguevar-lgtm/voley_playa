@@ -1,6 +1,6 @@
-package com.senati.voley.reservaservice;
+package com.senati.voley.service;
 
-import com.senati.voley.entityreserva.Reserva;
+import com.senati.voley.entity.Reserva;
 import com.senati.voley.reservarepository.ReservaRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ReservaService {
         if (reserva.getEstado() == null) {
             reserva.setEstado("Confirmada");
         }
-        return reservaRepository.save(reserva);
+        return ReservaRepository.save(reserva);
     }
 
     public void eliminarReserva(Integer id) {

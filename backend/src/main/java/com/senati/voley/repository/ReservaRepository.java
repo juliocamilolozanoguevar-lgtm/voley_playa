@@ -1,6 +1,6 @@
-package com.senati.voley.reservarepository;
+package com.senati.voley.repository;
 
-import com.senati.voley.entityreserva.Reserva;
+import com.senati.voley.entity.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
