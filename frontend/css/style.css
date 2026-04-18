@@ -1,0 +1,41 @@
+/* --- Paleta de Colores Figma --- */
+:root {
+    --bg-dark: #121416;       /* Fondo profundo */
+    --sidebar-color: #1a1d20; /* Color del Sidebar */
+    --accent-cyan: #0dcaf0;   /* Color principal Diloz */
+    --text-muted: #adb5bd;
+    --card-bg: #212529;
+}
+
+body {
+    background-color: var(--bg-dark);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: white;
+}
+
+/* --- Estilo de Inputs Estilo Figma --- */
+.form-control {
+    background-color: #2c3136 !important;
+    border: 1px solid #3d444b !important;
+    color: white !important;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 0 0 0.25 row rgba(13, 202, 240, 0.25);
+}
+
+/* --- Botones --- */
+.btn-diloz {
+    background-color: var(--accent-cyan);
+    color: #000;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-diloz:hover {
+    background-color: #0baccc;
+    transform: translateY(-2px);
+}
