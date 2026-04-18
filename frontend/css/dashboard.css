@@ -1,0 +1,96 @@
+/* --- Reset y Base --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Sidebar (Menú Desplegable/Fijo) --- */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: #212529;
+    display: flex;
+    flex-direction: column;
+    position: fixed; /* Mantiene el menú anclado */
+    left: 0;
+    top: 0;
+    z-index: 1100; /* Asegura que esté por encima de la navbar y el contenido */
+    transition: all 0.3s ease;
+    overflow-y: auto; /* Permite scroll dentro del menú si es necesario */
+}
+
+.sidebar nav {
+    flex-grow: 1; /* Empuja el logout al fondo */
+}
+
+.sidebar a {
+    color: #adb5bd;
+    text-decoration: none;
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-left: 4px solid transparent;
+}
+
+.sidebar a i {
+    width: 30px;
+    font-size: 1.1rem;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background-color: #343a40;
+    color: #0dcaf0;
+    border-left: 4px solid #0dcaf0;
+}
+
+.logout-container {
+    padding: 20px;
+    background-color: #1a1d20; /* Un tono ligeramente más oscuro */
+}
+
+.text-danger {
+    color: #ff6b6b !important;
+    font-weight: bold;
+}
+
+/* --- Área de Contenido --- */
+.main-content {
+    margin-left: 260px; /* Igual al ancho del sidebar */
+    width: calc(100% - 260px);
+    transition: all 0.3s ease;
+}
+
+/* --- RESPONSIVE: Ajuste para móviles --- */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 75px; /* Se reduce pero no se pierde */
+    }
+
+    .sidebar span, .sidebar h4 {
+        display: none; /* Oculta texto, deja iconos */
+    }
+
+    .sidebar a {
+        justify-content: center;
+        padding: 20px 0;
+        border-left: none;
+    }
+
+    .sidebar a i {
+        margin: 0;
+        width: auto;
+    }
+
+    .main-content {
+        margin-left: 75px; /* Ajusta el margen al nuevo ancho del sidebar */
+        width: calc(100% - 75px);
+    }
+}
