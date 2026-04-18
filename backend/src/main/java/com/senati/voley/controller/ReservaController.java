@@ -1,7 +1,7 @@
 package com.senati.voley.controller;
 
 import com.senati.voley.entity.Reserva;
-import com.senati.voley.reservaservice.ReservaService;
+import com.senati.voley.service.ReservaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
