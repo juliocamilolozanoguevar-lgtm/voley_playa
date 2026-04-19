@@ -1,47 +1,60 @@
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Detiene el envío normal del formulario
+const loginForm = document.getElementById("loginForm");
+const errorMsg = document.getElementById("errorMessage");
+const loginButton = document.getElementById("loginButton");
+const apiOriginLabel = document.getElementById("apiOriginLabel");
 
-    // 1. Capturamos los datos que escribió Julio (o cualquier usuario)
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    const errorMsg = document.getElementById('errorMessage');
+if (apiOriginLabel && window.VoleyApi) {
+  apiOriginLabel.textContent = window.VoleyApi.origin;
+}
 
-    // Limpiamos mensajes de error previos
-    errorMsg.classList.add('d-none');
+if (loginForm) {
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value;
+
+    toggleMessage("", true);
+    if (loginButton) {
+      loginButton.disabled = true;
+      loginButton.textContent = "Validando...";
+    }
 
     try {
-        // 2. Enviamos la petición al backend (IntelliJ ejecutando en el puerto 8080)
-        const response = await fetch('http://localhost:8080/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: user,
-                password: pass
-            })
-        });
+      const data = await window.VoleyApi.fetchJson("/login", {
+        method: "POST",
+        body: JSON.stringify({ username: user, password: pass }),
+      });
 
-        // 3. Analizamos la respuesta del servidor
-        if (response.ok) {
-            const data = await response.json();
-            
-            // Si el backend devolvió "status: ok" o un objeto Usuario
-            if (data.nombre) {
-                // Guardamos el nombre en la memoria del navegador para el Dashboard
-                localStorage.setItem('nombreUsuario', data.nombre);
-                
-                // Redirigimos al Dashboard
-                window.location.href = "dashboard.html";
-            }
-        } else {
-            // Si el servidor responde con 401 o 400 (error de credenciales)
-            errorMsg.classList.remove('d-none');
-        }
+      if (data.status === "ok") {
+        localStorage.setItem("nombreUsuario", data.nombre || user || "Administrador");
+        window.location.href = "dashboard.html";
+        return;
+      }
 
+      toggleMessage(data.message || "Credenciales incorrectas.");
     } catch (error) {
-        // Si el backend está apagado o no hay conexión
-        console.error("Error de conexión:", error);
-        alert("No se pudo conectar con el servidor. ¿Encendiste el backend en IntelliJ?");
+      toggleMessage(error.message || "No se pudo conectar con el backend.");
+    } finally {
+      if (loginButton) {
+        loginButton.disabled = false;
+        loginButton.textContent = "Ingresar al sistema";
+      }
     }
-});
+  });
+}
+
+function toggleMessage(message, hide = false) {
+  if (!errorMsg) {
+    return;
+  }
+
+  if (hide) {
+    errorMsg.textContent = "";
+    errorMsg.classList.add("d-none");
+    return;
+  }
+
+  errorMsg.textContent = message;
+  errorMsg.classList.remove("d-none");
+}

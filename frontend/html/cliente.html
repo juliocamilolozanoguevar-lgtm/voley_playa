@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diloz | Clientes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="app-body">
+  <div class="container-fluid py-3 py-lg-4">
+    <div class="row g-4">
+      <div class="col-12 col-lg-3 col-xl-2">
+        <aside class="offcanvas-lg offcanvas-start sidebar-panel" tabindex="-1" id="appSidebar" aria-labelledby="sidebarTitle">
+          <div class="offcanvas-header d-lg-none border-bottom">
+            <h5 class="offcanvas-title mb-0" id="sidebarTitle">Voley Playa Diloz</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+          </div>
+
+          <div class="offcanvas-body d-flex flex-column p-3 p-xl-4">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <span class="brand-mark">VD</span>
+              <div>
+                <p class="sidebar-kicker mb-1">Voley Playa</p>
+                <h2 class="h5 mb-0 text-white">Diloz Club</h2>
+              </div>
+            </div>
+
+            <nav class="nav nav-pills flex-column gap-2 mb-4">
+              <a href="../dashboard.html" class="nav-link sidebar-link">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+              </a>
+              <a href="cliente.html" class="nav-link sidebar-link active">
+                <i class="fa-regular fa-id-card"></i>
+                <span>Clientes</span>
+              </a>
+              <a href="reserva.html" class="nav-link sidebar-link">
+                <i class="fa-regular fa-calendar-check"></i>
+                <span>Reservas</span>
+              </a>
+            </nav>
+
+            <div class="card sidebar-note border-0 rounded-4 mt-auto">
+              <div class="card-body p-3">
+                <p class="small text-uppercase fw-bold mb-2">Backend IntelliJ</p>
+                <strong class="d-block mb-2" data-api-origin>http://localhost:8080</strong>
+                <span class="small d-block">Datos en tiempo real desde Spring Boot.</span>
+              </div>
+            </div>
+
+            <a href="../login.html" class="btn btn-outline-light rounded-4 mt-3 w-100" data-logout>
+              <i class="fa-regular fa-rectangle-xmark me-2"></i>Cerrar sesion
+            </a>
+          </div>
+        </aside>
+      </div>
+
+      <div class="col-12 col-lg-9 col-xl-10">
+        <main class="page-panel">
+          <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-4">
+            <div>
+              <p class="section-kicker mb-2">Gestion de clientes</p>
+              <h1 class="page-title mb-0">Base de clientes</h1>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 gap-sm-3">
+              <div class="card border-0 session-pill rounded-4">
+                <div class="card-body py-3 px-4">
+                  <span class="small text-secondary d-block">Sesion activa</span>
+                  <strong data-username>Administrador</strong>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-primary d-lg-none rounded-4 px-3 py-2" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+            </div>
+          </div>
+
+          <section class="card border-0 hero-card rounded-5 mb-4">
+            <div class="card-body p-4 p-xl-5">
+              <p class="section-kicker mb-2">Seguimiento</p>
+              <h2 class="hero-title mb-3">Consulta rapidamente quienes ya estan registrados en el club.</h2>
+              <p class="hero-copy mb-0">
+                La tabla y los indicadores usan Bootstrap y se alimentan desde el backend
+                para que la gestion diaria sea mas clara en pantalla grande.
+              </p>
+            </div>
+          </section>
+
+          <section class="row g-4">
+            <div class="col-12 col-xl-8">
+              <article class="card content-card border-0 rounded-5 h-100">
+                <div class="card-header bg-transparent border-0 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 px-4 pt-4">
+                  <div>
+                    <p class="section-kicker mb-2">Listado</p>
+                    <h2 class="h4 mb-0">Clientes registrados</h2>
+                  </div>
+                  <span class="badge rounded-pill panel-badge" id="clientesTotal">0</span>
+                </div>
+
+                <div class="card-body pt-3">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle app-table mb-0">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Nombre completo</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody id="clientesTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="col-12 col-xl-4">
+              <div class="row g-3">
+                <div class="col-12">
+                  <article class="card metric-card border-0 rounded-5 h-100">
+                    <div class="card-body d-flex align-items-center gap-3 p-4">
+                      <div class="metric-icon"><i class="fa-solid fa-user-group"></i></div>
+                      <div>
+                        <p class="text-secondary small mb-1">Total de clientes</p>
+                        <strong class="metric-value" id="clientesRegistrados">0</strong>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="col-12">
+                  <article class="card metric-card border-0 rounded-5 h-100">
+                    <div class="card-body d-flex align-items-center gap-3 p-4">
+                      <div class="metric-icon"><i class="fa-solid fa-circle-check"></i></div>
+                      <div>
+                        <p class="text-secondary small mb-1">Clientes activos</p>
+                        <strong class="metric-value" id="clientesActivos">0</strong>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="col-12">
+                  <article class="card metric-card border-0 rounded-5 h-100">
+                    <div class="card-body d-flex align-items-center gap-3 p-4">
+                      <div class="metric-icon"><i class="fa-solid fa-id-badge"></i></div>
+                      <div>
+                        <p class="text-secondary small mb-1">Ultimo cliente</p>
+                        <strong class="metric-value metric-value-sm" id="clienteReciente">Sin datos</strong>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="col-12">
+                  <div id="clientesStatus" class="status-note">
+                    Esperando datos del backend...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/api-config.js"></script>
+  <script src="../js/ui-shell.js"></script>
+  <script src="../js/cliente.js"></script>
+</body>
+</html>
