@@ -1,0 +1,32 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.5)
+
+2026-04-19T00:51:56.153-05:00  INFO 5992 --- [voley] [           main] com.senati.voley.VoleyApplication        : Starting VoleyApplication v0.0.1-SNAPSHOT using Java 25.0.1 with PID 5992 (C:\xampp\htdocs\voley_playa\backend\target\voley-0.0.1-SNAPSHOT.jar started by JULIO in C:\xampp\htdocs\voley_playa\backend)
+2026-04-19T00:51:56.158-05:00  INFO 5992 --- [voley] [           main] com.senati.voley.VoleyApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-04-19T00:51:56.761-05:00  INFO 5992 --- [voley] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-19T00:51:56.815-05:00  INFO 5992 --- [voley] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 43 ms. Found 5 JPA repository interfaces.
+2026-04-19T00:51:57.349-05:00  INFO 5992 --- [voley] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-19T00:51:57.368-05:00  INFO 5992 --- [voley] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-19T00:51:57.370-05:00  INFO 5992 --- [voley] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-19T00:51:57.407-05:00  INFO 5992 --- [voley] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-19T00:51:57.410-05:00  INFO 5992 --- [voley] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1190 ms
+2026-04-19T00:51:57.621-05:00  INFO 5992 --- [voley] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-19T00:51:57.674-05:00  INFO 5992 --- [voley] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-19T00:51:57.710-05:00  INFO 5992 --- [voley] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-19T00:51:57.904-05:00  INFO 5992 --- [voley] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-19T00:51:57.928-05:00  INFO 5992 --- [voley] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-19T00:51:58.098-05:00  INFO 5992 --- [voley] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e92c3b6
+2026-04-19T00:51:58.101-05:00  INFO 5992 --- [voley] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-19T00:51:58.145-05:00  WARN 5992 --- [voley] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.0 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2026-04-19T00:51:58.151-05:00  WARN 5992 --- [voley] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-19T00:51:58.790-05:00  INFO 5992 --- [voley] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-19T00:51:58.864-05:00  INFO 5992 --- [voley] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-19T00:51:59.218-05:00  WARN 5992 --- [voley] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-19T00:51:59.587-05:00  INFO 5992 --- [voley] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-04-19T00:51:59.606-05:00  INFO 5992 --- [voley] [           main] com.senati.voley.VoleyApplication        : Started VoleyApplication in 3.846 seconds (process running for 4.285)

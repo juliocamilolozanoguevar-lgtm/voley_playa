@@ -1,4 +1,12 @@
+let reportesCache = {
+  dias: [],
+  semanas: [],
+  meses: [],
+};
+let rangoActivo = "dias";
+
 document.addEventListener("DOMContentLoaded", async () => {
+  bindReportFilters();
   await cargarDashboard();
 });
 
@@ -33,9 +41,14 @@ async function cargarDashboard() {
     actualizarTexto("reportHoraPico", resumen.horaPico || "Sin datos");
     actualizarTexto("reportClientesTotal", `${resumen.clientesRegistrados ?? 0}`);
 
+    reportesCache = {
+      dias: resumen.reportes?.dias || [],
+      semanas: resumen.reportes?.semanas || [],
+      meses: resumen.reportes?.meses || [],
+    };
+
     renderizarReservas(resumen.reservasRecientes || []);
-    renderizarGrafico("reportChart", resumen.reservasPorDia || []);
-    renderizarGrafico("miniReportChart", resumen.reservasPorDia || []);
+    renderizarGraficosActivos();
   } catch (error) {
     tbody.innerHTML = `
       <tr class="empty-row">
@@ -55,10 +68,21 @@ async function cargarDashboard() {
     actualizarTexto("reportDiaMasReservas", "Sin datos");
     actualizarTexto("reportHoraPico", "Sin datos");
     actualizarTexto("reportClientesTotal", "0");
-    renderizarGrafico("reportChart", []);
-    renderizarGrafico("miniReportChart", []);
+    reportesCache = { dias: [], semanas: [], meses: [] };
+    renderizarGraficosActivos();
     mostrarAlerta("dashboardAlert", error.message || "No se pudo conectar con el backend.", "danger");
   }
+}
+
+function bindReportFilters() {
+  document.querySelectorAll("[data-report-range]").forEach((button) => {
+    button.addEventListener("click", () => {
+      rangoActivo = button.dataset.reportRange || "dias";
+      document.querySelectorAll("[data-report-range]").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      renderizarGraficosActivos();
+    });
+  });
 }
 
 function renderizarReservas(reservas) {
@@ -128,13 +152,21 @@ function renderizarGrafico(containerId, items) {
     .join("");
 }
 
+function renderizarGraficosActivos() {
+  renderizarGrafico("reportChart", reportesCache[rangoActivo] || []);
+  renderizarGrafico("miniReportChart", reportesCache[rangoActivo] || []);
+}
+
 function obtenerClaseEstado(estado) {
   const valor = (estado || "").toLowerCase();
   if (valor.includes("final")) {
     return "status-finalizada";
   }
-  if (valor.includes("hoy")) {
+  if (valor.includes("pagado")) {
     return "status-confirmada";
+  }
+  if (valor.includes("cancelado")) {
+    return "status-finalizada";
   }
   return "status-pendiente";
 }

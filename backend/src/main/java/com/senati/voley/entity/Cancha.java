@@ -6,13 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "cancha")
-@Data
-@NoArgsConstructor
 public class Cancha {
 
     @Id
@@ -25,4 +21,31 @@ public class Cancha {
 
     @Column(name = "descripcion", length = 200)
     private String descripcion;
+
+    public Cancha() {
+    }
+
+    public Integer getIdCancha() {
+        return idCancha;
+    }
+
+    public void setIdCancha(Integer idCancha) {
+        this.idCancha = idCancha;
+    }
+
+    public String getNombreCancha() {
+        return nombreCancha;
+    }
+
+    public void setNombreCancha(String nombreCancha) {
+        this.nombreCancha = nombreCancha;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }

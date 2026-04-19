@@ -99,6 +99,20 @@
                 <input type="time" id="horaFin" class="form-control rounded-4" required>
               </div>
 
+              <div class="col-12 col-md-6">
+                <label for="estadoReserva" class="form-label fw-semibold">Estado de reserva</label>
+                <select id="estadoReserva" class="form-select rounded-4" required>
+                  <option value="PENDIENTE PAGO">Pendiente pago</option>
+                  <option value="PAGADO">Pagado</option>
+                  <option value="CANCELADO">Cancelado</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="adelantoReserva" class="form-label fw-semibold">Monto de adelanto</label>
+                <input type="number" id="adelantoReserva" class="form-control rounded-4" min="0" step="0.01" value="0">
+              </div>
+
               <div class="col-12 d-grid mt-2">
                 <button type="submit" class="btn btn-primary btn-lg rounded-4">Guardar reserva</button>
               </div>
@@ -114,6 +128,10 @@
           </div>
 
           <div class="card-body pt-3">
+            <div class="mb-3">
+              <label for="buscarReservaCliente" class="form-label fw-semibold">Buscar cliente</label>
+              <input type="search" id="buscarReservaCliente" class="form-control rounded-4" placeholder="Escribe nombre, apellido o DNI">
+            </div>
             <div class="table-responsive">
               <table class="table align-middle app-table mb-0">
                 <thead>
@@ -123,6 +141,8 @@
                     <th>Cliente</th>
                     <th>Cancha</th>
                     <th>Estado</th>
+                    <th>Adelanto</th>
+                    <th>Guardar</th>
                   </tr>
                 </thead>
                 <tbody id="tablaReservas"></tbody>

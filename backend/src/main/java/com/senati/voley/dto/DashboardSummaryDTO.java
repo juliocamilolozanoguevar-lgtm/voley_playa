@@ -11,7 +11,7 @@ public record DashboardSummaryDTO(
         long clientesRegistrados,
         String diaMasReservas,
         String horaPico,
-        List<DashboardChartItem> reservasPorDia,
+        DashboardReportSeriesDTO reportes,
         List<ReservaResumenDTO> reservasRecientes
 ) {
 }

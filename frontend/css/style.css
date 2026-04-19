@@ -403,6 +403,25 @@ body.app-body {
   box-shadow: 0 0 0 0.25rem rgba(78, 177, 243, 0.16);
 }
 
+.report-filter-group {
+  background: #eef7ff;
+  padding: 0.3rem;
+  border-radius: 999px;
+}
+
+.report-filter-btn {
+  border: 0;
+  border-radius: 999px !important;
+  color: var(--app-primary-dark);
+  font-weight: 800;
+  padding: 0.65rem 1rem;
+}
+
+.report-filter-btn.active {
+  background: linear-gradient(135deg, var(--app-primary), var(--app-sky));
+  color: #fff;
+}
+
 @media (max-width: 991.98px) {
   .menu-toggle-fixed {
     top: 0.85rem;

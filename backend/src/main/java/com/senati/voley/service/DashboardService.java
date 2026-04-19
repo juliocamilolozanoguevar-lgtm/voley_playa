@@ -1,6 +1,7 @@
 package com.senati.voley.service;
 
 import com.senati.voley.dto.DashboardChartItem;
+import com.senati.voley.dto.DashboardReportSeriesDTO;
 import com.senati.voley.dto.DashboardSummaryDTO;
 import com.senati.voley.dto.ReservaResumenDTO;
 import com.senati.voley.entity.Pago;
@@ -15,11 +16,14 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.WeekFields;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 
 @Service
 public class DashboardService {
@@ -72,8 +76,12 @@ public class DashboardService {
                 .map(Pago::getMonto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        List<DashboardChartItem> reservasPorDia = construirReservasPorDia(reservas);
-        String diaMasReservas = obtenerDiaMasReservas(reservasPorDia);
+        DashboardReportSeriesDTO reportes = new DashboardReportSeriesDTO(
+                construirReservasPorDia(reservas),
+                construirReservasPorSemana(reservas),
+                construirReservasPorMes(reservas)
+        );
+        String diaMasReservas = obtenerDiaMasReservas(reportes.dias());
         String horaPico = obtenerHoraPico(reservas);
 
         List<ReservaResumenDTO> reservasRecientes = reservas.stream()
@@ -89,7 +97,7 @@ public class DashboardService {
                 clienteRepository.count(),
                 diaMasReservas,
                 horaPico,
-                reservasPorDia,
+                reportes,
                 reservasRecientes
         );
     }
@@ -106,6 +114,63 @@ public class DashboardService {
         List<DashboardChartItem> items = new ArrayList<>();
         DAY_ORDER.forEach(day -> items.add(new DashboardChartItem(etiquetaDia(day), contador.getOrDefault(day, 0L))));
         return items;
+    }
+
+    private List<DashboardChartItem> construirReservasPorSemana(List<Reserva> reservas) {
+        LocalDate hoy = LocalDate.now();
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        Map<String, Long> contador = new LinkedHashMap<>();
+
+        for (int offset = 5; offset >= 0; offset--) {
+            LocalDate fecha = hoy.minusWeeks(offset);
+            int semana = fecha.get(weekFields.weekOfWeekBasedYear());
+            contador.put("Sem " + semana, 0L);
+        }
+
+        reservas.forEach(reserva -> {
+            if (reserva.getFecha() == null) {
+                return;
+            }
+
+            LocalDate fecha = reserva.getFecha();
+            if (fecha.isBefore(hoy.minusWeeks(5))) {
+                return;
+            }
+
+            String etiqueta = "Sem " + fecha.get(weekFields.weekOfWeekBasedYear());
+            if (contador.containsKey(etiqueta)) {
+                contador.put(etiqueta, contador.get(etiqueta) + 1);
+            }
+        });
+
+        return contador.entrySet().stream()
+                .map(entry -> new DashboardChartItem(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    private List<DashboardChartItem> construirReservasPorMes(List<Reserva> reservas) {
+        LocalDate hoy = LocalDate.now();
+        Map<YearMonth, Long> contador = new LinkedHashMap<>();
+
+        for (int offset = 5; offset >= 0; offset--) {
+            YearMonth mes = YearMonth.from(hoy.minusMonths(offset));
+            contador.put(mes, 0L);
+        }
+
+        reservas.forEach(reserva -> {
+            if (reserva.getFecha() == null) {
+                return;
+            }
+
+            YearMonth mes = YearMonth.from(reserva.getFecha());
+            if (contador.containsKey(mes)) {
+                contador.put(mes, contador.get(mes) + 1);
+            }
+        });
+
+        return contador.entrySet().stream()
+                .map(entry -> new DashboardChartItem(etiquetaMes(entry.getKey()), entry.getValue()))
+                .toList();
     }
 
     private String obtenerDiaMasReservas(List<DashboardChartItem> reservasPorDia) {
@@ -162,15 +227,6 @@ public class DashboardService {
                 ? "Sin cancha"
                 : valor(reserva.getCancha().getNombreCancha());
 
-        String estado;
-        if (reserva.getFecha().isBefore(LocalDate.now())) {
-            estado = "Finalizada";
-        } else if (reserva.getFecha().isEqual(LocalDate.now())) {
-            estado = "Hoy";
-        } else {
-            estado = "Programada";
-        }
-
         return new ReservaResumenDTO(
                 reserva.getIdReserva(),
                 reserva.getFecha().format(DATE_FORMAT),
@@ -178,7 +234,7 @@ public class DashboardService {
                 reserva.getHoraFin().format(TIME_FORMAT),
                 cliente.isBlank() ? "Sin cliente" : cliente,
                 cancha,
-                estado
+                resolverEstado(reserva)
         );
     }
 
@@ -206,6 +262,30 @@ public class DashboardService {
             case SATURDAY -> "Sab";
             case SUNDAY -> "Dom";
         };
+    }
+
+    private String etiquetaMes(YearMonth mes) {
+        return switch (mes.getMonth()) {
+            case JANUARY -> "Ene";
+            case FEBRUARY -> "Feb";
+            case MARCH -> "Mar";
+            case APRIL -> "Abr";
+            case MAY -> "May";
+            case JUNE -> "Jun";
+            case JULY -> "Jul";
+            case AUGUST -> "Ago";
+            case SEPTEMBER -> "Sep";
+            case OCTOBER -> "Oct";
+            case NOVEMBER -> "Nov";
+            case DECEMBER -> "Dic";
+        };
+    }
+
+    private String resolverEstado(Reserva reserva) {
+        if (reserva.getEstadoReserva() != null && !reserva.getEstadoReserva().isBlank()) {
+            return reserva.getEstadoReserva();
+        }
+        return "PENDIENTE PAGO";
     }
 
     private String valor(String texto) {

@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  bindClienteForm();
   await cargarClientes();
 });
 
@@ -50,6 +51,44 @@ async function cargarClientes() {
     `;
     mostrarAlerta("clientesAlert", error.message || "No se pudo conectar con el backend.", "danger");
   }
+}
+
+function bindClienteForm() {
+  const form = document.getElementById("clienteForm");
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const dni = document.getElementById("clienteDni")?.value.trim() || "";
+    const nombre = document.getElementById("clienteNombre")?.value.trim() || "";
+    const apellido = document.getElementById("clienteApellido")?.value.trim() || "";
+
+    if (!/^\d{8}$/.test(dni)) {
+      mostrarAlerta("clientesAlert", "El DNI debe tener 8 digitos.", "danger");
+      return;
+    }
+
+    if (!nombre || !apellido) {
+      mostrarAlerta("clientesAlert", "Completa todos los datos del cliente.", "danger");
+      return;
+    }
+
+    try {
+      await window.VoleyApi.fetchJson("/clientes", {
+        method: "POST",
+        body: JSON.stringify({ dni, nombre, apellido }),
+      });
+
+      form.reset();
+      await cargarClientes();
+      mostrarAlerta("clientesAlert", "Cliente registrado correctamente.", "success");
+    } catch (error) {
+      mostrarAlerta("clientesAlert", error.message || "No se pudo registrar el cliente.", "danger");
+    }
+  });
 }
 
 function actualizarResumen(clientes) {

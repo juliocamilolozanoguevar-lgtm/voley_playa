@@ -103,27 +103,62 @@
       </div>
     </div>
 
-    <article class="card border-0 app-card rounded-5">
-      <div class="card-header bg-transparent border-0 px-4 pt-4">
-        <h2 class="h4 mb-0">Listado de clientes</h2>
+    <div class="row g-4">
+      <div class="col-12 col-xl-4">
+        <article class="card border-0 app-card rounded-5 h-100">
+          <div class="card-header bg-transparent border-0 px-4 pt-4">
+            <h2 class="h4 mb-0">Nuevo cliente</h2>
+          </div>
+
+          <div class="card-body pt-3">
+            <form id="clienteForm" class="row g-3" novalidate>
+              <div class="col-12">
+                <label for="clienteDni" class="form-label fw-semibold">DNI</label>
+                <input type="text" id="clienteDni" class="form-control rounded-4" maxlength="8" placeholder="12345678" required>
+              </div>
+
+              <div class="col-12">
+                <label for="clienteNombre" class="form-label fw-semibold">Nombre</label>
+                <input type="text" id="clienteNombre" class="form-control rounded-4" placeholder="Julio" required>
+              </div>
+
+              <div class="col-12">
+                <label for="clienteApellido" class="form-label fw-semibold">Apellido</label>
+                <input type="text" id="clienteApellido" class="form-control rounded-4" placeholder="Lozano" required>
+              </div>
+
+              <div class="col-12 d-grid mt-2">
+                <button type="submit" class="btn btn-primary btn-lg rounded-4">Registrar cliente</button>
+              </div>
+            </form>
+          </div>
+        </article>
       </div>
 
-      <div class="card-body pt-3">
-        <div class="table-responsive">
-          <table class="table align-middle app-table mb-0">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>DNI</th>
-                <th>Nombre completo</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody id="clientesTableBody"></tbody>
-          </table>
-        </div>
+      <div class="col-12 col-xl-8">
+        <article class="card border-0 app-card rounded-5 h-100">
+          <div class="card-header bg-transparent border-0 px-4 pt-4">
+            <h2 class="h4 mb-0">Listado de clientes</h2>
+          </div>
+
+          <div class="card-body pt-3">
+            <div class="table-responsive">
+              <table class="table align-middle app-table mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>DNI</th>
+                    <th>Nombre completo</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="clientesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
       </div>
-    </article>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

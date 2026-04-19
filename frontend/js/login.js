@@ -1,10 +1,17 @@
 const loginForm = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMessage");
 const loginButton = document.getElementById("loginButton");
-const apiOriginLabel = document.getElementById("apiOriginLabel");
+const backendStatus = document.getElementById("backendStatus");
 
-if (apiOriginLabel && window.VoleyApi) {
-  apiOriginLabel.textContent = window.VoleyApi.origin;
+if (window.VoleyApi) {
+  window.VoleyApi
+    .init()
+    .then(() => {
+      toggleBackendStatus(`Backend conectado en ${window.VoleyApi.origin}`, false);
+    })
+    .catch((error) => {
+      toggleBackendStatus(error.message || "No se pudo conectar con el backend.", true);
+    });
 }
 
 if (loginForm) {
@@ -62,4 +69,14 @@ function toggleMessage(message, hide = false) {
 
   errorMsg.textContent = message;
   errorMsg.classList.remove("d-none");
+}
+
+function toggleBackendStatus(message, isError = false) {
+  if (!backendStatus) {
+    return;
+  }
+
+  backendStatus.textContent = message;
+  backendStatus.classList.toggle("text-danger", isError);
+  backendStatus.classList.toggle("text-secondary", !isError);
 }
