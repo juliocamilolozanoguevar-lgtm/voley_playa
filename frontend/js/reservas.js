@@ -10,9 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function cargarClientesEnSelect() {
   const select = document.getElementById("selectCliente");
-  if (!select) {
-    return;
-  }
+  if (!select) return;
 
   select.innerHTML = `<option value="">Seleccione un cliente</option>`;
 
@@ -24,271 +22,159 @@ async function cargarClientesEnSelect() {
     });
   } catch (error) {
     select.innerHTML = `<option value="">Sin clientes disponibles</option>`;
-    mostrarAlerta("reservaAlert", error.message || "No se pudieron cargar los clientes.", "danger");
+    mostrarAlerta("reservaAlert", error.message, "danger");
   }
 }
 
 async function cargarCanchasEnSelect() {
   const select = document.getElementById("selectCancha");
-  if (!select) {
-    return;
-  }
+  if (!select) return;
 
   select.innerHTML = `<option value="">Seleccione una cancha</option>`;
 
   try {
     const canchas = await window.VoleyApi.fetchJson("/canchas");
     canchas.forEach((cancha) => {
-      select.innerHTML += `<option value="${cancha.idCancha}">${escapeHtml(cancha.nombreCancha || "Sin nombre")}</option>`;
+      select.innerHTML += `<option value="${cancha.idCancha}">${escapeHtml(cancha.nombreCancha)}</option>`;
     });
   } catch (error) {
     select.innerHTML = `<option value="">Sin canchas disponibles</option>`;
-    mostrarAlerta("reservaAlert", error.message || "No se pudieron cargar las canchas.", "danger");
+    mostrarAlerta("reservaAlert", error.message, "danger");
   }
 }
 
 async function listarReservas() {
   const tbody = document.getElementById("tablaReservas");
-  if (!tbody) {
-    return;
-  }
+  if (!tbody) return;
 
-  tbody.innerHTML = `
-    <tr class="empty-row">
-      <td colspan="7">Cargando reservas...</td>
-    </tr>
-  `;
+  tbody.innerHTML = `<tr><td colspan="7">Cargando reservas...</td></tr>`;
 
   try {
     const reservas = await window.VoleyApi.fetchJson("/reservas");
     reservasCache = reservas;
-    limpiarAlerta("reservaAlert");
     renderReservas(reservasCache);
   } catch (error) {
-    reservasCache = [];
-    tbody.innerHTML = `
-      <tr class="empty-row">
-        <td colspan="7">No se pudo cargar la lista de reservas.</td>
-      </tr>
-    `;
-    mostrarAlerta("reservaAlert", error.message || "No se pudo conectar con el backend.", "danger");
+    tbody.innerHTML = `<tr><td colspan="7">Error al cargar</td></tr>`;
   }
-}
-
-function bindReservaForm() {
-  const form = document.getElementById("reservaForm");
-  if (!form) {
-    return;
-  }
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const clienteId = Number(document.getElementById("selectCliente").value);
-    const canchaId = Number(document.getElementById("selectCancha").value);
-    const fecha = document.getElementById("fecha").value;
-    const horaInicio = document.getElementById("horaInicio").value;
-    const horaFin = document.getElementById("horaFin").value;
-    const estadoReserva = document.getElementById("estadoReserva").value;
-
-    if (!clienteId || !canchaId || !fecha || !horaInicio || !horaFin || !estadoReserva) {
-      mostrarAlerta("reservaAlert", "Completa todos los campos de la reserva.", "danger");
-      return;
-    }
-
-    if (horaFin <= horaInicio) {
-      mostrarAlerta("reservaAlert", "La hora final debe ser mayor que la hora inicial.", "danger");
-      return;
-    }
-
-    try {
-      await window.VoleyApi.fetchJson("/reservas", {
-        method: "POST",
-      body: JSON.stringify({
-          fecha,
-          horaInicio,
-          horaFin,
-          estadoReserva,
-          adelanto: Number(document.getElementById("adelantoReserva").value || 0),
-          idCliente: clienteId,
-          idCancha: canchaId,
-        }),
-      });
-
-      form.reset();
-      await listarReservas();
-      mostrarAlerta("reservaAlert", "Reserva registrada correctamente.", "success");
-    } catch (error) {
-      mostrarAlerta("reservaAlert", error.message || "No se pudo registrar la reserva.", "danger");
-    }
-  });
-}
-
-function bindBuscadorReservas() {
-  const input = document.getElementById("buscarReservaCliente");
-  if (!input) {
-    return;
-  }
-
-  input.addEventListener("input", () => {
-    const termino = input.value.trim().toLowerCase();
-    const filtradas = reservasCache.filter((reserva) => {
-      const cliente = `${reserva?.cliente?.nombre || ""} ${reserva?.cliente?.apellido || ""}`.trim().toLowerCase();
-      const dni = String(reserva?.cliente?.dni || "").toLowerCase();
-      return !termino || cliente.includes(termino) || dni.includes(termino);
-    });
-
-    renderReservas(filtradas);
-  });
 }
 
 function renderReservas(reservas) {
   const tbody = document.getElementById("tablaReservas");
-  if (!tbody) {
-    return;
-  }
+  if (!tbody) return;
 
   if (!reservas.length) {
-    tbody.innerHTML = `
-      <tr class="empty-row">
-        <td colspan="7">No hay reservas registradas.</td>
-      </tr>
-    `;
+    tbody.innerHTML = `<tr><td colspan="7">Sin reservas</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = reservas
-    .map((reserva) => {
-      const inicio = formatearHora(reserva.horaInicio);
-      const fin = formatearHora(reserva.horaFin);
-      const cliente = `${reserva?.cliente?.nombre || ""} ${reserva?.cliente?.apellido || ""}`.trim() || "Cliente anonimo";
-      const cancha = reserva?.cancha?.nombreCancha || "Sin cancha";
-      const estado = normalizarEstadoReserva(reserva.estadoReserva);
-      const adelanto = Number(reserva.adelanto || 0).toFixed(2);
+  tbody.innerHTML = reservas.map((reserva) => {
+    return `
+      <tr>
+        <td>${formatearFecha(reserva.fecha)}</td>
+        <td>${formatearHora(reserva.horaInicio)} - ${formatearHora(reserva.horaFin)}</td>
+        <td>${escapeHtml(reserva.cliente?.nombre || "")}</td>
+        <td>${escapeHtml(reserva.cancha?.nombreCancha || "")}</td>
 
-      return `
-        <tr>
-          <td>${escapeHtml(formatearFecha(reserva.fecha))}</td>
-          <td>${escapeHtml(`${inicio} - ${fin}`)}</td>
-          <td>${escapeHtml(cliente)}</td>
-          <td>${escapeHtml(cancha)}</td>
-          <td>
-            <select class="form-select form-select-sm rounded-4 reserva-estado-select" data-reserva-id="${escapeHtml(reserva.idReserva)}">
-              ${buildEstadoOptions(reserva.estadoReserva)}
-            </select>
-          </td>
-          <td>
-            <input type="number" class="form-control form-control-sm rounded-4 reserva-adelanto-input" data-reserva-id="${escapeHtml(reserva.idReserva)}" min="0" step="0.01" value="${escapeHtml(adelanto)}">
-          </td>
-          <td>
-            <button type="button" class="btn btn-primary btn-sm rounded-4 reserva-save-btn" data-reserva-id="${escapeHtml(reserva.idReserva)}">
-              Guardar
+        <td>
+          <select class="form-select reserva-estado-select" data-reserva-id="${reserva.idReserva}">
+            ${buildEstadoOptions(reserva.estadoReserva)}
+          </select>
+        </td>
+
+        <td>
+          <input type="number" class="form-control reserva-adelanto-input"
+            data-reserva-id="${reserva.idReserva}"
+            value="${reserva.adelanto || 0}">
+        </td>
+
+        <td>
+          <div class="d-flex gap-2">
+
+            <button class="btn btn-warning btn-sm reserva-edit-btn"
+              data-reserva-id="${reserva.idReserva}">
+              Editar
             </button>
-          </td>
-        </tr>
-      `;
-    })
-    .join("");
 
-  tbody.querySelectorAll(".reserva-save-btn").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const id = button.dataset.reservaId;
-      const estadoSelect = tbody.querySelector(`.reserva-estado-select[data-reserva-id="${id}"]`);
-      const adelantoInput = tbody.querySelector(`.reserva-adelanto-input[data-reserva-id="${id}"]`);
+            <button class="btn btn-danger btn-sm reserva-delete-btn"
+              data-reserva-id="${reserva.idReserva}">
+              Eliminar
+            </button>
+
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // ✏️ EDITAR
+  tbody.querySelectorAll(".reserva-edit-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.reservaId;
+
+      const estado = document.querySelector(`.reserva-estado-select[data-reserva-id="${id}"]`).value;
+      const adelanto = document.querySelector(`.reserva-adelanto-input[data-reserva-id="${id}"]`).value;
 
       try {
-        button.disabled = true;
         await window.VoleyApi.fetchJson(`/reservas/${id}/estado`, {
           method: "PUT",
           body: JSON.stringify({
-            estadoReserva: estadoSelect?.value || "PENDIENTE PAGO",
-            adelanto: Number(adelantoInput?.value || 0),
-          }),
+            estadoReserva: estado,
+            adelanto: Number(adelanto)
+          })
         });
 
-        await listarReservas();
-        mostrarAlerta("reservaAlert", "Reserva actualizada correctamente.", "success");
-      } catch (error) {
-        mostrarAlerta("reservaAlert", error.message || "No se pudo actualizar la reserva.", "danger");
-      } finally {
-        button.disabled = false;
+        alert("Actualizado");
+        listarReservas();
+
+      } catch (e) {
+        alert("Error al actualizar");
+      }
+    });
+  });
+
+  // 🗑 ELIMINAR
+  tbody.querySelectorAll(".reserva-delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.reservaId;
+
+      if (!confirm("¿Eliminar reserva?")) return;
+
+      try {
+        await window.VoleyApi.fetchJson(`/reservas/${id}`, {
+          method: "DELETE"
+        });
+
+        alert("Eliminado");
+        listarReservas();
+
+      } catch (e) {
+        alert("Error al eliminar");
       }
     });
   });
 }
 
-function normalizarEstadoReserva(estado) {
-  const valor = (estado || "PENDIENTE PAGO").toUpperCase();
-  if (valor === "PAGADO") {
-    return "Pagado";
-  }
-  if (valor === "CANCELADO") {
-    return "Cancelado";
-  }
-  return "Pendiente pago";
-}
-
-function obtenerClaseEstado(estado) {
-  const valor = estado.toLowerCase();
-  if (valor.includes("pagado")) {
-    return "status-confirmada";
-  }
-  if (valor.includes("cancelado")) {
-    return "status-finalizada";
-  }
-  return "status-pendiente";
-}
-
-function buildEstadoOptions(estadoActual) {
-  const estados = ["PENDIENTE PAGO", "PAGADO", "CANCELADO"];
-  const actual = (estadoActual || "PENDIENTE PAGO").toUpperCase();
-  return estados
-    .map((estado) => `<option value="${estado}" ${estado === actual ? "selected" : ""}>${escapeHtml(normalizarEstadoReserva(estado))}</option>`)
-    .join("");
-}
-
+// UTILIDADES
 function formatearFecha(fecha) {
-  if (!fecha) {
-    return "-";
-  }
-
-  const [anio, mes, dia] = fecha.split("-");
-  return `${dia}/${mes}/${anio}`;
+  if (!fecha) return "-";
+  const [y, m, d] = fecha.split("-");
+  return `${d}/${m}/${y}`;
 }
 
-function formatearHora(hora) {
-  if (!hora) {
-    return "--:--";
-  }
-  return hora.slice(0, 5);
+function formatearHora(h) {
+  return h ? h.slice(0, 5) : "--:--";
 }
 
-function mostrarAlerta(id, mensaje, tipo) {
-  const alerta = document.getElementById(id);
-  if (!alerta) {
-    return;
-  }
-
-  alerta.className = `alert app-alert alert-${tipo} rounded-4`;
-  alerta.textContent = mensaje;
-  alerta.classList.remove("d-none");
+function buildEstadoOptions(actual) {
+  const estados = ["PENDIENTE PAGO", "PAGADO", "CANCELADO"];
+  return estados.map(e =>
+    `<option ${e === actual ? "selected" : ""}>${e}</option>`
+  ).join("");
 }
 
-function limpiarAlerta(id) {
-  const alerta = document.getElementById(id);
-  if (!alerta) {
-    return;
-  }
-
-  alerta.textContent = "";
-  alerta.classList.add("d-none");
-}
-
-function escapeHtml(value) {
-  return String(value)
+function escapeHtml(str) {
+  return String(str)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replaceAll(">", "&gt;");
 }
