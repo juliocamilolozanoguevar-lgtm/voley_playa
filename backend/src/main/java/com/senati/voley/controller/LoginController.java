@@ -1,11 +1,16 @@
 package com.senati.voley.controller;
 
+import com.senati.voley.dto.LoginRequest;
 import com.senati.voley.entity.Usuario;
 import com.senati.voley.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -13,43 +18,43 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class LoginController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository; // Conexión al Repositorio
+    private final UsuarioRepository usuarioRepository;
+
+    public LoginController(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> datos) {
-        // 1. Recibimos lo que Julio escribe en el JS
-        String user = datos.get("username");
-        String pass = datos.get("password");
-
-        Map<String, Object> respuesta = new HashMap<>();
-
-        // 2. Buscamos en la tabla 'usuario' de MySQL
-        Optional<Usuario> usuarioDb = usuarioRepository.findByUsername(user);
-
-        // 3. Verificamos si el usuario existe
-        if (usuarioDb.isPresent()) {
-            Usuario u = usuarioDb.get();
-
-            // 4. Comparamos la clave enviada con la de la base de datos (admin123)
-            if (u.getPassword().equals(pass)) {
-                respuesta.put("status", "ok");
-
-                // Como el nombre está en la tabla cliente, si tienes la relación hecha:
-                // respuesta.put("nombre", u.getCliente().getNombre());
-
-                // Si aún no haces la relación, puedes ponerlo así para probar:
-                respuesta.put("nombre", "Julio Lozano");
-
-            } else {
-                respuesta.put("status", "error");
-                respuesta.put("message", "Contraseña incorrecta");
-            }
-        } else {
-            respuesta.put("status", "error");
-            respuesta.put("message", "El usuario no existe en la base de datos");
+    public Map<String, Object> login(@RequestBody LoginRequest datos) {
+        if (datos.username() == null || datos.username().isBlank()
+                || datos.password() == null || datos.password().isBlank()) {
+            return respuesta("error", "Completa usuario y contrasena.", null);
         }
 
-        return respuesta;
+        Optional<Usuario> usuarioDb = usuarioRepository.findByUsername(datos.username().trim());
+        if (usuarioDb.isEmpty()) {
+            return respuesta("error", "El usuario no existe en la base de datos.", null);
+        }
+
+        Usuario usuario = usuarioDb.get();
+        if (!usuario.getPassword().equals(datos.password())) {
+            return respuesta("error", "Contrasena incorrecta.", null);
+        }
+
+        return respuesta("ok", null, usuario.getNombreAdmin() == null || usuario.getNombreAdmin().isBlank()
+                ? "Administrador"
+                : usuario.getNombreAdmin());
+    }
+
+    private Map<String, Object> respuesta(String status, String message, String nombre) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("status", status);
+        if (message != null) {
+            payload.put("message", message);
+        }
+        if (nombre != null) {
+            payload.put("nombre", nombre);
+        }
+        return payload;
     }
 }

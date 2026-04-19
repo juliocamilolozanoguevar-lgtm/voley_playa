@@ -1,5 +1,3 @@
-const PRECIO_REFERENCIAL = 50;
-
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarDashboard();
 });
@@ -12,73 +10,138 @@ async function cargarDashboard() {
 
   tbody.innerHTML = `
     <tr class="empty-row">
-      <td colspan="4">Cargando reservas...</td>
+      <td colspan="4">Cargando datos del dashboard...</td>
     </tr>
   `;
 
   try {
-    const reservas = await window.VoleyApi.fetchJson("/reservas");
-    const hoy = obtenerFechaActual();
-    const reservasHoy = reservas.filter((reserva) => normalizarFecha(reserva.fecha) === hoy);
-    const reservasMes = reservas.filter((reserva) => normalizarFecha(reserva.fecha).slice(0, 7) === hoy.slice(0, 7));
-    const horasOcupadas = reservasHoy.reduce(
-      (total, reserva) => total + calcularDuracion(reserva.hora_inicio, reserva.hora_fin),
-      0
-    );
-    const canchasActivas = new Set(
-      reservas.map((reserva) => reserva?.cancha?.id_cancha || reserva?.cancha?.nombre).filter(Boolean)
-    ).size;
+    const resumen = await window.VoleyApi.fetchJson("/dashboard/resumen");
+    limpiarAlerta("dashboardAlert");
 
-    actualizarTexto("ingresosMes", `S/. ${reservasMes.length * PRECIO_REFERENCIAL}`);
-    actualizarTexto("reservasHoy", `${reservasHoy.length}`);
-    actualizarTexto("horasOcupadas", `${horasOcupadas} H`);
-    actualizarTexto("canchasActivas", `${canchasActivas}`);
+    actualizarTexto("ingresosMes", formatearMoneda(resumen.ingresosMes));
+    actualizarTexto("reservasHoy", `${resumen.reservasHoy ?? 0}`);
+    actualizarTexto("horasOcupadas", `${resumen.horasOcupadasHoy ?? 0} H`);
+    actualizarTexto("canchasActivas", `${resumen.canchasActivas ?? 0}`);
 
-    const visibles = reservasHoy.length ? reservasHoy : reservas.slice(0, 8);
-    if (!visibles.length) {
-      tbody.innerHTML = `
-        <tr class="empty-row">
-          <td colspan="4">No hay reservas registradas.</td>
-        </tr>
-      `;
-      setEstadoDashboard("No se encontraron reservas en el backend.", "success");
-      return;
-    }
+    actualizarTexto("miniIngresosMes", formatearMoneda(resumen.ingresosMes));
+    actualizarTexto("miniReservasHoy", `${resumen.reservasHoy ?? 0}`);
+    actualizarTexto("miniHorasOcupadas", `${resumen.horasOcupadasHoy ?? 0} H`);
+    actualizarTexto("miniCanchasActivas", `${resumen.canchasActivas ?? 0}`);
 
-    tbody.innerHTML = visibles
-      .map((reserva) => {
-        const cliente = `${reserva?.cliente?.nombre || ""} ${reserva?.cliente?.apellido || ""}`.trim() || "Sin cliente";
-        const cancha = reserva?.cancha?.nombre || "Sin cancha";
-        const fecha = formatearFecha(reserva.fecha);
-        const estado = reserva.estado || "Pendiente";
-        const badgeClass = estado.toLowerCase().includes("confirm") ? "status-confirmada" : "status-pendiente";
+    actualizarTexto("reportIngresosMes", formatearMoneda(resumen.ingresosMes));
+    actualizarTexto("reportDiaMasReservas", resumen.diaMasReservas || "Sin datos");
+    actualizarTexto("reportHoraPico", resumen.horaPico || "Sin datos");
+    actualizarTexto("reportClientesTotal", `${resumen.clientesRegistrados ?? 0}`);
 
-        return `
-          <tr>
-            <td>${escapeHtml(cliente)}</td>
-            <td>${escapeHtml(cancha)}</td>
-            <td>${escapeHtml(fecha)}</td>
-            <td><span class="status-badge ${badgeClass}">${escapeHtml(estado)}</span></td>
-          </tr>
-        `;
-      })
-      .join("");
-
-    setEstadoDashboard("Datos sincronizados correctamente con el backend.", "success");
+    renderizarReservas(resumen.reservasRecientes || []);
+    renderizarGrafico("reportChart", resumen.reservasPorDia || []);
+    renderizarGrafico("miniReportChart", resumen.reservasPorDia || []);
   } catch (error) {
-    actualizarTexto("ingresosMes", "S/. 0");
-    actualizarTexto("reservasHoy", "0");
-    actualizarTexto("horasOcupadas", "0 H");
-    actualizarTexto("canchasActivas", "0");
-
     tbody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="4">No se pudo conectar con el backend.</td>
+        <td colspan="4">No se pudo cargar el dashboard.</td>
       </tr>
     `;
 
-    setEstadoDashboard(error.message || "No se pudo conectar con el backend.", "error");
+    actualizarTexto("ingresosMes", "S/. 0.00");
+    actualizarTexto("reservasHoy", "0");
+    actualizarTexto("horasOcupadas", "0 H");
+    actualizarTexto("canchasActivas", "0");
+    actualizarTexto("miniIngresosMes", "S/. 0.00");
+    actualizarTexto("miniReservasHoy", "0");
+    actualizarTexto("miniHorasOcupadas", "0 H");
+    actualizarTexto("miniCanchasActivas", "0");
+    actualizarTexto("reportIngresosMes", "S/. 0.00");
+    actualizarTexto("reportDiaMasReservas", "Sin datos");
+    actualizarTexto("reportHoraPico", "Sin datos");
+    actualizarTexto("reportClientesTotal", "0");
+    renderizarGrafico("reportChart", []);
+    renderizarGrafico("miniReportChart", []);
+    mostrarAlerta("dashboardAlert", error.message || "No se pudo conectar con el backend.", "danger");
   }
+}
+
+function renderizarReservas(reservas) {
+  const tbody = document.getElementById("tbodyReservas");
+  if (!tbody) {
+    return;
+  }
+
+  if (!reservas.length) {
+    tbody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="4">No hay reservas registradas.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = reservas
+    .map((reserva) => {
+      const badgeClass = obtenerClaseEstado(reserva.estado);
+      return `
+        <tr>
+          <td>${escapeHtml(reserva.cliente || "Sin cliente")}</td>
+          <td>${escapeHtml(reserva.cancha || "Sin cancha")}</td>
+          <td>${escapeHtml(reserva.fecha || "-")}</td>
+          <td><span class="status-badge ${badgeClass}">${escapeHtml(reserva.estado || "Programada")}</span></td>
+        </tr>
+      `;
+    })
+    .join("");
+}
+
+function renderizarGrafico(containerId, items) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    return;
+  }
+
+  const data = items.length
+    ? items
+    : [
+        { label: "Lun", total: 0 },
+        { label: "Mar", total: 0 },
+        { label: "Mie", total: 0 },
+        { label: "Jue", total: 0 },
+        { label: "Vie", total: 0 },
+        { label: "Sab", total: 0 },
+        { label: "Dom", total: 0 },
+      ];
+
+  const maximo = Math.max(...data.map((item) => Number(item.total) || 0), 1);
+
+  container.innerHTML = data
+    .map((item) => {
+      const total = Number(item.total) || 0;
+      const height = Math.max((total / maximo) * 100, total > 0 ? 12 : 8);
+      return `
+        <div class="chart-bar-item">
+          <div class="chart-bar-track">
+            <div class="chart-bar" style="--chart-height: ${height}%"></div>
+          </div>
+          <span class="chart-bar-label">${escapeHtml(item.label || "")}</span>
+          <span class="chart-bar-value">${total}</span>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function obtenerClaseEstado(estado) {
+  const valor = (estado || "").toLowerCase();
+  if (valor.includes("final")) {
+    return "status-finalizada";
+  }
+  if (valor.includes("hoy")) {
+    return "status-confirmada";
+  }
+  return "status-pendiente";
+}
+
+function formatearMoneda(valor) {
+  const numero = Number(valor || 0);
+  return `S/. ${numero.toFixed(2)}`;
 }
 
 function actualizarTexto(id, valor) {
@@ -88,82 +151,25 @@ function actualizarTexto(id, valor) {
   }
 }
 
-function setEstadoDashboard(message, type) {
-  const status = document.getElementById("dashboardStatus");
-  if (!status) {
+function mostrarAlerta(id, mensaje, tipo) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
     return;
   }
 
-  status.textContent = message;
-  status.classList.remove("is-error", "is-success");
+  alerta.className = `alert app-alert alert-${tipo} rounded-4`;
+  alerta.textContent = mensaje;
+  alerta.classList.remove("d-none");
+}
 
-  if (type === "error") {
-    status.classList.add("is-error");
+function limpiarAlerta(id) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
     return;
   }
 
-  if (type === "success") {
-    status.classList.add("is-success");
-  }
-}
-
-function obtenerFechaActual() {
-  const ahora = new Date();
-  const anio = ahora.getFullYear();
-  const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-  const dia = String(ahora.getDate()).padStart(2, "0");
-  return `${anio}-${mes}-${dia}`;
-}
-
-function normalizarFecha(fecha) {
-  if (!fecha) {
-    return "";
-  }
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
-    return fecha;
-  }
-
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
-    const [dia, mes, anio] = fecha.split("/");
-    return `${anio}-${mes}-${dia}`;
-  }
-
-  return fecha;
-}
-
-function formatearFecha(fecha) {
-  if (!fecha) {
-    return "-";
-  }
-
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
-    return fecha;
-  }
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
-    const [anio, mes, dia] = fecha.split("-");
-    return `${dia}/${mes}/${anio}`;
-  }
-
-  return fecha;
-}
-
-function calcularDuracion(inicio, fin) {
-  if (!inicio || !fin) {
-    return 0;
-  }
-
-  const [horaInicio, minutoInicio] = inicio.slice(0, 5).split(":").map(Number);
-  const [horaFin, minutoFin] = fin.slice(0, 5).split(":").map(Number);
-  const minutosInicio = horaInicio * 60 + minutoInicio;
-  const minutosFin = horaFin * 60 + minutoFin;
-
-  if (Number.isNaN(minutosInicio) || Number.isNaN(minutosFin) || minutosFin <= minutosInicio) {
-    return 0;
-  }
-
-  return Math.round((minutosFin - minutosInicio) / 60);
+  alerta.textContent = "";
+  alerta.classList.add("d-none");
 }
 
 function escapeHtml(value) {

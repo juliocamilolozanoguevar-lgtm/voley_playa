@@ -1,15 +1,23 @@
 package com.senati.voley.controller;
 
+import com.senati.voley.dto.ReservaRequest;
 import com.senati.voley.entity.Reserva;
 import com.senati.voley.service.ReservaService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/reservas")
-@CrossOrigin(origins = "*") // Permite la conexión con tu interfaz dinámica [cite: 47]
+@RequestMapping("/api/reservas")
+@CrossOrigin(origins = "*")
 public class ReservaController {
 
     private final ReservaService reservaService;
@@ -18,13 +26,11 @@ public class ReservaController {
         this.reservaService = reservaService;
     }
 
-    // CONSULTA: Listar historial completo
     @GetMapping
     public List<Reserva> listar() {
         return reservaService.listarTodas();
     }
 
-    // CONSULTA: Buscar por ID
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> buscar(@PathVariable Integer id) {
         return reservaService.buscarPorId(id)
@@ -32,13 +38,11 @@ public class ReservaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // REGISTRO: Crear nueva reserva
     @PostMapping
-    public ResponseEntity<Reserva> registrar(@RequestBody Reserva reserva) {
-        return ResponseEntity.ok(reservaService.registrarReserva(reserva));
+    public ResponseEntity<Reserva> registrar(@RequestBody ReservaRequest request) {
+        return ResponseEntity.ok(reservaService.registrarReserva(request));
     }
 
-    // ELIMINACIÓN: Cancelar o eliminar reserva
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         reservaService.eliminarReserva(id);

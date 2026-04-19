@@ -18,7 +18,13 @@
       ...(options.headers || {}),
     };
 
-    const response = await fetch(url, { ...options, headers });
+    let response;
+    try {
+      response = await fetch(url, { ...options, headers });
+    } catch (error) {
+      throw new Error("No se pudo conectar con el backend.");
+    }
+
     const contentType = response.headers.get("content-type") || "";
     const payload = contentType.includes("application/json")
       ? await response.json()
@@ -28,7 +34,7 @@
       const message =
         (payload && typeof payload === "object" && payload.message) ||
         (typeof payload === "string" && payload) ||
-        "No se pudo completar la solicitud.";
+        "Ocurrio un problema al comunicarse con el backend.";
 
       const error = new Error(message);
       error.response = response;

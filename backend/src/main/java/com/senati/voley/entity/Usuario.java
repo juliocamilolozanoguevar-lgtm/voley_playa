@@ -1,19 +1,31 @@
 package com.senati.voley.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "usuarios") // Asegúrate que tu tabla en MySQL se llame así
-@Data // Si usas Lombok, si no, genera Getters y Setters manualmente
+@Table(name = "usuario")
+@Data
+@NoArgsConstructor
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
 
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
+
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
-    private String nombre;
-    private String rol;
+
+    @Column(name = "nombre_admin", length = 100)
+    private String nombreAdmin;
 }

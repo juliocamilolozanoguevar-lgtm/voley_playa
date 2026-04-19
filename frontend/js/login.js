@@ -15,6 +15,11 @@ if (loginForm) {
     const pass = document.getElementById("password").value;
 
     toggleMessage("", true);
+    if (!user || !pass) {
+      toggleMessage("Completa usuario y contrasena.");
+      return;
+    }
+
     if (loginButton) {
       loginButton.disabled = true;
       loginButton.textContent = "Validando...";

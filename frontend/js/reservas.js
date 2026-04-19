@@ -1,12 +1,6 @@
-const CANCHAS_BASE = [
-  { id_cancha: 1, nombre: "Cancha Principal" },
-  { id_cancha: 2, nombre: "Cancha Norte" },
-  { id_cancha: 3, nombre: "Cancha Sunset" },
-];
-
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarClientesEnSelect();
-  cargarCanchasEnSelect();
+  await cargarCanchasEnSelect();
   await listarReservas();
   bindReservaForm();
 });
@@ -22,25 +16,32 @@ async function cargarClientesEnSelect() {
   try {
     const clientes = await window.VoleyApi.fetchJson("/clientes");
     clientes.forEach((cliente) => {
-      const nombre = `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim() || `Cliente ${cliente.id}`;
-      select.innerHTML += `<option value="${cliente.id}">${escapeHtml(nombre)}</option>`;
+      const nombre = `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim() || "Sin nombre";
+      select.innerHTML += `<option value="${cliente.idCliente}">${escapeHtml(nombre)}</option>`;
     });
   } catch (error) {
-    select.innerHTML += `<option value="">Sin conexion al backend</option>`;
-    setFeedback(error.message || "No se pudieron cargar los clientes.", "error");
+    select.innerHTML = `<option value="">Sin clientes disponibles</option>`;
+    mostrarAlerta("reservaAlert", error.message || "No se pudieron cargar los clientes.", "danger");
   }
 }
 
-function cargarCanchasEnSelect() {
+async function cargarCanchasEnSelect() {
   const select = document.getElementById("selectCancha");
   if (!select) {
     return;
   }
 
   select.innerHTML = `<option value="">Seleccione una cancha</option>`;
-  CANCHAS_BASE.forEach((cancha) => {
-    select.innerHTML += `<option value="${cancha.id_cancha}">${escapeHtml(cancha.nombre)}</option>`;
-  });
+
+  try {
+    const canchas = await window.VoleyApi.fetchJson("/canchas");
+    canchas.forEach((cancha) => {
+      select.innerHTML += `<option value="${cancha.idCancha}">${escapeHtml(cancha.nombreCancha || "Sin nombre")}</option>`;
+    });
+  } catch (error) {
+    select.innerHTML = `<option value="">Sin canchas disponibles</option>`;
+    mostrarAlerta("reservaAlert", error.message || "No se pudieron cargar las canchas.", "danger");
+  }
 }
 
 async function listarReservas() {
@@ -57,25 +58,25 @@ async function listarReservas() {
 
   try {
     const reservas = await window.VoleyApi.fetchJson("/reservas");
+    limpiarAlerta("reservaAlert");
+
     if (!reservas.length) {
       tbody.innerHTML = `
         <tr class="empty-row">
           <td colspan="5">No hay reservas registradas.</td>
         </tr>
       `;
-      setFeedback("No hay reservas registradas todavia.", "success");
       return;
     }
 
     tbody.innerHTML = reservas
-      .slice(0, 12)
       .map((reserva) => {
-        const inicio = (reserva.hora_inicio || "").slice(0, 5);
-        const fin = (reserva.hora_fin || "").slice(0, 5);
-        const cliente = `${reserva?.cliente?.nombre || ""} ${reserva?.cliente?.apellido || ""}`.trim() || "Sin cliente";
-        const cancha = reserva?.cancha?.nombre || "Sin cancha";
-        const estado = reserva.estado || "Pendiente";
-        const badgeClass = estado.toLowerCase().includes("confirm") ? "status-confirmada" : "status-pendiente";
+        const inicio = formatearHora(reserva.horaInicio);
+        const fin = formatearHora(reserva.horaFin);
+        const cliente = `${reserva?.cliente?.nombre || ""} ${reserva?.cliente?.apellido || ""}`.trim() || "Cliente anonimo";
+        const cancha = reserva?.cancha?.nombreCancha || "Sin cancha";
+        const estado = resolverEstadoReserva(reserva.fecha);
+        const badgeClass = estado === "Finalizada" ? "status-finalizada" : estado === "Hoy" ? "status-confirmada" : "status-pendiente";
 
         return `
           <tr>
@@ -88,15 +89,13 @@ async function listarReservas() {
         `;
       })
       .join("");
-
-    setFeedback("Reservas cargadas correctamente desde el backend.", "success");
   } catch (error) {
     tbody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="5">No se pudo conectar con el backend.</td>
+        <td colspan="5">No se pudo cargar la lista de reservas.</td>
       </tr>
     `;
-    setFeedback(error.message || "No se pudo conectar con el backend.", "error");
+    mostrarAlerta("reservaAlert", error.message || "No se pudo conectar con el backend.", "danger");
   }
 }
 
@@ -112,57 +111,61 @@ function bindReservaForm() {
     const clienteId = Number(document.getElementById("selectCliente").value);
     const canchaId = Number(document.getElementById("selectCancha").value);
     const fecha = document.getElementById("fecha").value;
-    const estado = document.getElementById("estadoReserva").value || "Confirmada";
     const horaInicio = document.getElementById("horaInicio").value;
     const horaFin = document.getElementById("horaFin").value;
 
     if (!clienteId || !canchaId || !fecha || !horaInicio || !horaFin) {
-      setFeedback("Completa todos los campos antes de guardar la reserva.", "error");
+      mostrarAlerta("reservaAlert", "Completa todos los campos de la reserva.", "danger");
       return;
     }
 
-    const payload = {
-      fecha,
-      hora_inicio: horaInicio,
-      hora_fin: horaFin,
-      estado,
-      cliente: { id: clienteId },
-      cancha: { id_cancha: canchaId },
-    };
+    if (horaFin <= horaInicio) {
+      mostrarAlerta("reservaAlert", "La hora final debe ser mayor que la hora inicial.", "danger");
+      return;
+    }
 
     try {
       await window.VoleyApi.fetchJson("/reservas", {
         method: "POST",
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          fecha,
+          horaInicio,
+          horaFin,
+          idCliente: clienteId,
+          idCancha: canchaId,
+        }),
       });
 
       form.reset();
-      document.getElementById("estadoReserva").value = "Confirmada";
       await listarReservas();
-      setFeedback("Reserva creada correctamente.", "success");
+      mostrarAlerta("reservaAlert", "Reserva registrada correctamente.", "success");
     } catch (error) {
-      setFeedback(error.message || "No se pudo crear la reserva.", "error");
+      mostrarAlerta("reservaAlert", error.message || "No se pudo registrar la reserva.", "danger");
     }
   });
 }
 
-function setFeedback(message, type) {
-  const feedback = document.getElementById("reservaFeedback");
-  if (!feedback) {
-    return;
+function resolverEstadoReserva(fecha) {
+  if (!fecha) {
+    return "Programada";
   }
 
-  feedback.textContent = message;
-  feedback.classList.remove("is-error", "is-success");
-
-  if (type === "error") {
-    feedback.classList.add("is-error");
-    return;
+  const hoy = obtenerFechaActual();
+  if (fecha < hoy) {
+    return "Finalizada";
   }
-
-  if (type === "success") {
-    feedback.classList.add("is-success");
+  if (fecha === hoy) {
+    return "Hoy";
   }
+  return "Programada";
+}
+
+function obtenerFechaActual() {
+  const ahora = new Date();
+  const anio = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+  const dia = String(ahora.getDate()).padStart(2, "0");
+  return `${anio}-${mes}-${dia}`;
 }
 
 function formatearFecha(fecha) {
@@ -170,16 +173,36 @@ function formatearFecha(fecha) {
     return "-";
   }
 
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
-    return fecha;
+  const [anio, mes, dia] = fecha.split("-");
+  return `${dia}/${mes}/${anio}`;
+}
+
+function formatearHora(hora) {
+  if (!hora) {
+    return "--:--";
+  }
+  return hora.slice(0, 5);
+}
+
+function mostrarAlerta(id, mensaje, tipo) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
+    return;
   }
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
-    const [anio, mes, dia] = fecha.split("-");
-    return `${dia}/${mes}/${anio}`;
+  alerta.className = `alert app-alert alert-${tipo} rounded-4`;
+  alerta.textContent = mensaje;
+  alerta.classList.remove("d-none");
+}
+
+function limpiarAlerta(id) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
+    return;
   }
 
-  return fecha;
+  alerta.textContent = "";
+  alerta.classList.add("d-none");
 }
 
 function escapeHtml(value) {

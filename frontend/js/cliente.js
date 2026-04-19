@@ -10,47 +10,45 @@ async function cargarClientes() {
 
   tbody.innerHTML = `
     <tr class="empty-row">
-      <td colspan="3">Cargando clientes...</td>
+      <td colspan="4">Cargando clientes...</td>
     </tr>
   `;
 
   try {
     const clientes = await window.VoleyApi.fetchJson("/clientes");
+    limpiarAlerta("clientesAlert");
     actualizarResumen(clientes);
 
     if (!clientes.length) {
       tbody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="3">No hay clientes registrados.</td>
+          <td colspan="4">No hay clientes registrados.</td>
         </tr>
       `;
-      setEstadoClientes("El backend no devolvio clientes todavia.", "success");
       return;
     }
 
     tbody.innerHTML = clientes
-      .slice(0, 10)
       .map((cliente) => {
-        const nombre = `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim() || `Cliente ${cliente.id ?? ""}`;
+        const nombreCompleto = `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim() || "Sin nombre";
         return `
           <tr>
-            <td>${escapeHtml(cliente.id ?? "-")}</td>
-            <td>${escapeHtml(nombre)}</td>
+            <td>${escapeHtml(cliente.idCliente ?? "-")}</td>
+            <td>${escapeHtml(cliente.dni || "-")}</td>
+            <td>${escapeHtml(nombreCompleto)}</td>
             <td><span class="status-badge status-confirmada">Activo</span></td>
           </tr>
         `;
       })
       .join("");
-
-    setEstadoClientes("Clientes sincronizados correctamente con el backend.", "success");
   } catch (error) {
     actualizarResumen([]);
     tbody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="3">No se pudo conectar con el backend.</td>
+        <td colspan="4">No se pudo cargar la lista de clientes.</td>
       </tr>
     `;
-    setEstadoClientes(error.message || "No se pudo conectar con el backend.", "error");
+    mostrarAlerta("clientesAlert", error.message || "No se pudo conectar con el backend.", "danger");
   }
 }
 
@@ -58,39 +56,40 @@ function actualizarResumen(clientes) {
   const total = clientes.length;
   const ultimo = clientes[clientes.length - 1];
   const nombreUltimo = ultimo
-    ? `${ultimo.nombre || ""} ${ultimo.apellido || ""}`.trim() || `Cliente ${ultimo.id ?? ""}`
+    ? `${ultimo.nombre || ""} ${ultimo.apellido || ""}`.trim() || "Sin datos"
     : "Sin datos";
 
-  setText("clientesTotal", `${total}`);
-  setText("clientesRegistrados", `${total}`);
-  setText("clientesActivos", `${total}`);
-  setText("clienteReciente", nombreUltimo);
+  actualizarTexto("clientesRegistrados", `${total}`);
+  actualizarTexto("clienteReciente", nombreUltimo);
+  actualizarTexto("dniReciente", ultimo?.dni || "Sin datos");
 }
 
-function setEstadoClientes(message, type) {
-  const status = document.getElementById("clientesStatus");
-  if (!status) {
-    return;
-  }
-
-  status.textContent = message;
-  status.classList.remove("is-error", "is-success");
-
-  if (type === "error") {
-    status.classList.add("is-error");
-    return;
-  }
-
-  if (type === "success") {
-    status.classList.add("is-success");
-  }
-}
-
-function setText(id, valor) {
+function actualizarTexto(id, valor) {
   const elemento = document.getElementById(id);
   if (elemento) {
     elemento.textContent = valor;
   }
+}
+
+function mostrarAlerta(id, mensaje, tipo) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
+    return;
+  }
+
+  alerta.className = `alert app-alert alert-${tipo} rounded-4`;
+  alerta.textContent = mensaje;
+  alerta.classList.remove("d-none");
+}
+
+function limpiarAlerta(id) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
+    return;
+  }
+
+  alerta.textContent = "";
+  alerta.classList.add("d-none");
 }
 
 function escapeHtml(value) {
