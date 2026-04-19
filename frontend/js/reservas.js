@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindBuscadorReservas();
 });
 
+// =========================
+// CARGAR SELECTS
+// =========================
+
 async function cargarClientesEnSelect() {
   const select = document.getElementById("selectCliente");
   if (!select) return;
@@ -43,6 +47,10 @@ async function cargarCanchasEnSelect() {
   }
 }
 
+// =========================
+// LISTAR RESERVAS
+// =========================
+
 async function listarReservas() {
   const tbody = document.getElementById("tablaReservas");
   if (!tbody) return;
@@ -57,6 +65,10 @@ async function listarReservas() {
     tbody.innerHTML = `<tr><td colspan="7">Error al cargar</td></tr>`;
   }
 }
+
+// =========================
+// RENDER TABLA
+// =========================
 
 function renderReservas(reservas) {
   const tbody = document.getElementById("tablaReservas");
@@ -90,11 +102,13 @@ function renderReservas(reservas) {
         <td>
           <div class="d-flex gap-2">
 
-            <button class="btn btn-warning btn-sm reserva-edit-btn"
+            <!-- BOTON AZUL -->
+            <button class="btn btn-primary btn-sm reserva-edit-btn"
               data-reserva-id="${reserva.idReserva}">
-              Editar
+              Guardar
             </button>
 
+            <!-- BOTON ROJO -->
             <button class="btn btn-danger btn-sm reserva-delete-btn"
               data-reserva-id="${reserva.idReserva}">
               Eliminar
@@ -106,33 +120,45 @@ function renderReservas(reservas) {
     `;
   }).join("");
 
-  // ✏️ EDITAR
+  // =========================
+  // EDITAR (GUARDAR CAMBIOS)
+  // =========================
+
   tbody.querySelectorAll(".reserva-edit-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.reservaId;
 
-      const estado = document.querySelector(`.reserva-estado-select[data-reserva-id="${id}"]`).value;
-      const adelanto = document.querySelector(`.reserva-adelanto-input[data-reserva-id="${id}"]`).value;
+      const estadoEl = document.querySelector(`.reserva-estado-select[data-reserva-id="${id}"]`);
+      const adelantoEl = document.querySelector(`.reserva-adelanto-input[data-reserva-id="${id}"]`);
+
+      const estado = estadoEl ? estadoEl.value : null;
+      const adelanto = adelantoEl ? adelantoEl.value : 0;
 
       try {
         await window.VoleyApi.fetchJson(`/reservas/${id}/estado`, {
           method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             estadoReserva: estado,
             adelanto: Number(adelanto)
           })
         });
 
-        alert("Actualizado");
+        mostrarAlerta("reservaAlert", "Reserva actualizada correctamente", "success");
         listarReservas();
 
       } catch (e) {
-        alert("Error al actualizar");
+        mostrarAlerta("reservaAlert", "Error al actualizar reserva", "danger");
       }
     });
   });
 
-  // 🗑 ELIMINAR
+  // =========================
+  // ELIMINAR
+  // =========================
+
   tbody.querySelectorAll(".reserva-delete-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.reservaId;
@@ -144,17 +170,20 @@ function renderReservas(reservas) {
           method: "DELETE"
         });
 
-        alert("Eliminado");
+        mostrarAlerta("reservaAlert", "Reserva eliminada", "success");
         listarReservas();
 
       } catch (e) {
-        alert("Error al eliminar");
+        mostrarAlerta("reservaAlert", "Error al eliminar", "danger");
       }
     });
   });
 }
 
+// =========================
 // UTILIDADES
+// =========================
+
 function formatearFecha(fecha) {
   if (!fecha) return "-";
   const [y, m, d] = fecha.split("-");
