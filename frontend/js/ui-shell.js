@@ -1,7 +1,29 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  if (isAppPageRequiringAuth() && !localStorage.getItem("nombreUsuario")) {
+    window.location.href = loginPathForCurrentPage();
+    return;
+  }
+
+  if (window.VoleyApi) {
+    try {
+      await window.VoleyApi.init();
+    } catch (e) {
+      // Origen se mantiene en el default; las paginas mostraran alertas al cargar datos
+    }
+  }
+
   hydrateSession();
   bindLogout();
 });
+
+function isAppPageRequiringAuth() {
+  const path = (window.location.pathname || "").toLowerCase();
+  return !path.endsWith("login.html");
+}
+
+function loginPathForCurrentPage() {
+  return (window.location.pathname || "").includes("/html/") ? "../login.html" : "login.html";
+}
 
 function hydrateSession() {
   const username = localStorage.getItem("nombreUsuario") || "Administrador";

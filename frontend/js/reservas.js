@@ -63,6 +63,7 @@ async function listarReservas() {
     renderReservas(reservasCache);
   } catch (error) {
     tbody.innerHTML = `<tr><td colspan="7">Error al cargar</td></tr>`;
+    mostrarAlerta("reservaAlert", error.message || "No se pudieron cargar las reservas.", "danger");
   }
 }
 
@@ -84,7 +85,7 @@ function renderReservas(reservas) {
       <tr>
         <td>${formatearFecha(reserva.fecha)}</td>
         <td>${formatearHora(reserva.horaInicio)} - ${formatearHora(reserva.horaFin)}</td>
-        <td>${escapeHtml(reserva.cliente?.nombre || "")}</td>
+        <td>${escapeHtml(formatClienteNombre(reserva.cliente))}</td>
         <td>${escapeHtml(reserva.cancha?.nombreCancha || "")}</td>
 
         <td>
@@ -146,11 +147,11 @@ function renderReservas(reservas) {
           })
         });
 
-        mostrarAlerta("reservaAlert", "Reserva actualizada correctamente", "success");
-        listarReservas();
+        await listarReservas();
+        mostrarAlerta("reservaAlert", "Reserva actualizada correctamente.", "success");
 
       } catch (e) {
-        mostrarAlerta("reservaAlert", "Error al actualizar reserva", "danger");
+        mostrarAlerta("reservaAlert", e.message || "Error al actualizar reserva", "danger");
       }
     });
   });
@@ -170,11 +171,11 @@ function renderReservas(reservas) {
           method: "DELETE"
         });
 
-        mostrarAlerta("reservaAlert", "Reserva eliminada", "success");
-        listarReservas();
+        await listarReservas();
+        mostrarAlerta("reservaAlert", "Reserva eliminada.", "success");
 
       } catch (e) {
-        mostrarAlerta("reservaAlert", "Error al eliminar", "danger");
+        mostrarAlerta("reservaAlert", e.message || "Error al eliminar", "danger");
       }
     });
   });
@@ -196,9 +197,13 @@ function formatearHora(h) {
 
 function buildEstadoOptions(actual) {
   const estados = ["PENDIENTE PAGO", "PAGADO", "CANCELADO"];
-  return estados.map(e =>
-    `<option ${e === actual ? "selected" : ""}>${e}</option>`
-  ).join("");
+  const actualNorm = String(actual || "").trim().toUpperCase();
+  return estados
+    .map(
+      (e) =>
+        `<option value="${e}" ${e === actualNorm ? "selected" : ""}>${e}</option>`
+    )
+    .join("");
 }
 
 function escapeHtml(str) {
@@ -206,4 +211,114 @@ function escapeHtml(str) {
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function formatClienteNombre(cliente) {
+  if (!cliente) {
+    return "";
+  }
+  return `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim();
+}
+
+function bindReservaForm() {
+  const form = document.getElementById("reservaForm");
+  if (!form) {
+    return;
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const idCliente = Number(document.getElementById("selectCliente")?.value);
+    const idCancha = Number(document.getElementById("selectCancha")?.value);
+    const fecha = document.getElementById("fecha")?.value || "";
+    const horaInicioRaw = document.getElementById("horaInicio")?.value || "";
+    const horaFinRaw = document.getElementById("horaFin")?.value || "";
+    const estadoReserva = document.getElementById("estadoReserva")?.value || "PENDIENTE PAGO";
+    const adelantoVal = document.getElementById("adelantoReserva")?.value;
+
+    if (!idCliente || !idCancha || !fecha || !horaInicioRaw || !horaFinRaw) {
+      mostrarAlerta("reservaAlert", "Completa cliente, cancha, fecha y horas.", "danger");
+      return;
+    }
+
+    const horaInicio = normalizarHoraParaApi(horaInicioRaw);
+    const horaFin = normalizarHoraParaApi(horaFinRaw);
+
+    const payload = {
+      idCliente,
+      idCancha,
+      fecha,
+      horaInicio,
+      horaFin,
+      estadoReserva,
+      adelanto: adelantoVal === "" || adelantoVal === undefined ? 0 : Number(adelantoVal),
+    };
+
+    try {
+      await window.VoleyApi.fetchJson("/reservas", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      form.reset();
+      await cargarClientesEnSelect();
+      await cargarCanchasEnSelect();
+      await listarReservas();
+      mostrarAlerta("reservaAlert", "Reserva registrada correctamente.", "success");
+    } catch (error) {
+      mostrarAlerta("reservaAlert", error.message || "No se pudo guardar la reserva.", "danger");
+    }
+  });
+}
+
+function normalizarHoraParaApi(valor) {
+  if (!valor) {
+    return valor;
+  }
+  return valor.length === 5 ? `${valor}:00` : valor;
+}
+
+function bindBuscadorReservas() {
+  const input = document.getElementById("buscarReservaCliente");
+  if (!input) {
+    return;
+  }
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) {
+      renderReservas(reservasCache);
+      return;
+    }
+
+    const filtradas = reservasCache.filter((reserva) => {
+      const nombreCompleto = formatClienteNombre(reserva.cliente).toLowerCase();
+      const dni = String(reserva.cliente?.dni || "").toLowerCase();
+      return nombreCompleto.includes(q) || dni.includes(q);
+    });
+
+    renderReservas(filtradas);
+  });
+}
+
+function mostrarAlerta(id, mensaje, tipo) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
+    return;
+  }
+
+  alerta.className = `alert app-alert alert-${tipo} rounded-4`;
+  alerta.textContent = mensaje;
+  alerta.classList.remove("d-none");
+}
+
+function limpiarAlerta(id) {
+  const alerta = document.getElementById(id);
+  if (!alerta) {
+    return;
+  }
+
+  alerta.textContent = "";
+  alerta.classList.add("d-none");
 }

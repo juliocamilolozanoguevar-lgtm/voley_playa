@@ -7,6 +7,9 @@ let rangoActivo = "dias";
 
 document.addEventListener("DOMContentLoaded", async () => {
   bindReportFilters();
+  document.getElementById("btnRefrescarDashboard")?.addEventListener("click", async () => {
+    await cargarDashboard();
+  });
   await cargarDashboard();
 });
 

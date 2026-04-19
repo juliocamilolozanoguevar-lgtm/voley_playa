@@ -1,6 +1,7 @@
 package com.senati.voley.service;
 
 import com.senati.voley.entity.Cliente;
+import com.senati.voley.exception.ResourceNotFoundException;
 import com.senati.voley.repository.ClienteRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,38 @@ public class ClienteService {
             throw new IllegalArgumentException("Completa los datos del cliente.");
         }
 
+        String dni = cliente.getDni().trim();
+        if (clienteRepository.findByDni(dni).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un cliente con ese DNI.");
+        }
+
+        cliente.setDni(dni);
+        cliente.setNombre(cliente.getNombre().trim());
+        cliente.setApellido(cliente.getApellido().trim());
         return clienteRepository.save(cliente);
+    }
+
+    public Cliente actualizarCliente(Integer id, Cliente datos) {
+        if (datos.getDni() == null || datos.getDni().isBlank()
+                || datos.getNombre() == null || datos.getNombre().isBlank()
+                || datos.getApellido() == null || datos.getApellido().isBlank()) {
+            throw new IllegalArgumentException("Completa los datos del cliente.");
+        }
+
+        Cliente existente = clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("El cliente no existe."));
+
+        String dni = datos.getDni().trim();
+        clienteRepository.findByDni(dni).ifPresent(otro -> {
+            if (!otro.getIdCliente().equals(id)) {
+                throw new IllegalArgumentException("Ya existe otro cliente con ese DNI.");
+            }
+        });
+
+        existente.setDni(dni);
+        existente.setNombre(datos.getNombre().trim());
+        existente.setApellido(datos.getApellido().trim());
+        return clienteRepository.save(existente);
     }
 
     public void eliminarCliente(Integer id) {

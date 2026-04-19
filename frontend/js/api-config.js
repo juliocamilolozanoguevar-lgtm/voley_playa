@@ -89,9 +89,24 @@
     }
 
     const contentType = response.headers.get("content-type") || "";
-    const payload = contentType.includes("application/json")
-      ? await response.json()
-      : await response.text();
+    let payload;
+
+    if (response.status === 204 || response.status === 205) {
+      payload = null;
+    } else {
+      const text = await response.text();
+      if (!text) {
+        payload = null;
+      } else if (contentType.includes("application/json")) {
+        try {
+          payload = JSON.parse(text);
+        } catch (e) {
+          payload = text;
+        }
+      } else {
+        payload = text;
+      }
+    }
 
     if (!response.ok) {
       const message =
