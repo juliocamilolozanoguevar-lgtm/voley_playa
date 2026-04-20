@@ -1,7 +1,6 @@
 package com.senati.voley.service;
 
 import com.senati.voley.dto.ReservaRequest;
-import com.senati.voley.dto.ReservaEstadoUpdateRequest;
 import com.senati.voley.entity.Cancha;
 import com.senati.voley.entity.Cliente;
 import com.senati.voley.entity.Reserva;
@@ -12,17 +11,12 @@ import com.senati.voley.repository.ReservaRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ReservaService {
-    private static final Set<String> ESTADOS_VALIDOS = Set.of(
-            "PAGADO",
-            "CANCELADO",
-            "PENDIENTE PAGO"
-    );
 
     private final ReservaRepository reservaRepository;
     private final ClienteRepository clienteRepository;
@@ -50,16 +44,15 @@ public class ReservaService {
         validarReserva(request);
 
         Cliente cliente = clienteRepository.findById(request.idCliente())
-                .orElseThrow(() -> new ResourceNotFoundException("El cliente seleccionado no existe."));
+                .orElseThrow(() -> new ResourceNotFoundException("El cliente no existe."));
 
         Cancha cancha = canchaRepository.findById(request.idCancha())
-                .orElseThrow(() -> new ResourceNotFoundException("La cancha seleccionada no existe."));
+                .orElseThrow(() -> new ResourceNotFoundException("La cancha no existe."));
 
         Reserva reserva = new Reserva();
         reserva.setFecha(request.fecha());
         reserva.setHoraInicio(request.horaInicio());
         reserva.setHoraFin(request.horaFin());
-        reserva.setEstadoReserva(normalizarEstado(request.estadoReserva()));
         reserva.setAdelanto(normalizarAdelanto(request.adelanto()));
         reserva.setCliente(cliente);
         reserva.setCancha(cancha);
@@ -67,46 +60,49 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
-    public Reserva actualizarEstadoReserva(Integer id, ReservaEstadoUpdateRequest request) {
-        Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("La reserva seleccionada no existe."));
+    public Reserva actualizarReserva(Integer id, ReservaRequest request) {
+        validarReserva(request);
 
-        reserva.setEstadoReserva(normalizarEstado(request.estadoReserva()));
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("La reserva no existe."));
+
+        Cliente cliente = clienteRepository.findById(request.idCliente())
+                .orElseThrow(() -> new ResourceNotFoundException("El cliente no existe."));
+
+        Cancha cancha = canchaRepository.findById(request.idCancha())
+                .orElseThrow(() -> new ResourceNotFoundException("La cancha no existe."));
+
+        reserva.setFecha(request.fecha());
+        reserva.setHoraInicio(request.horaInicio());
+        reserva.setHoraFin(request.horaFin());
         reserva.setAdelanto(normalizarAdelanto(request.adelanto()));
+        reserva.setCliente(cliente);
+        reserva.setCancha(cancha);
+
         return reservaRepository.save(reserva);
     }
 
     public void eliminarReserva(Integer id) {
+        if (!reservaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("La reserva no existe.");
+        }
+
         reservaRepository.deleteById(id);
     }
 
     private void validarReserva(ReservaRequest request) {
-        if (request.fecha() == null
-                || request.horaInicio() == null
-                || request.horaFin() == null
-                || request.idCliente() == null
-                || request.idCancha() == null) {
-            throw new IllegalArgumentException("Completa todos los campos de la reserva.");
+        if (request.fecha() == null ||
+                request.horaInicio() == null ||
+                request.horaFin() == null ||
+                request.idCliente() == null ||
+                request.idCancha() == null) {
+
+            throw new IllegalArgumentException("Completa todos los campos.");
         }
 
         if (!request.horaFin().isAfter(request.horaInicio())) {
-            throw new IllegalArgumentException("La hora final debe ser mayor que la hora inicial.");
+            throw new IllegalArgumentException("La hora final debe ser mayor que la inicial.");
         }
-
-        normalizarEstado(request.estadoReserva());
-        normalizarAdelanto(request.adelanto());
-    }
-
-    private String normalizarEstado(String estadoReserva) {
-        if (estadoReserva == null || estadoReserva.isBlank()) {
-            return "PENDIENTE PAGO";
-        }
-
-        String estadoNormalizado = estadoReserva.trim().toUpperCase();
-        if (!ESTADOS_VALIDOS.contains(estadoNormalizado)) {
-            throw new IllegalArgumentException("El estado de reserva no es valido.");
-        }
-        return estadoNormalizado;
     }
 
     private BigDecimal normalizarAdelanto(BigDecimal adelanto) {
@@ -115,9 +111,9 @@ public class ReservaService {
         }
 
         if (adelanto.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("El monto de adelanto no puede ser negativo.");
+            throw new IllegalArgumentException("El adelanto no puede ser negativo.");
         }
 
-        return adelanto.setScale(2, java.math.RoundingMode.HALF_UP);
+        return adelanto.setScale(2, RoundingMode.HALF_UP);
     }
 }

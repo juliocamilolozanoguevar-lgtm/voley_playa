@@ -1,15 +1,7 @@
 package com.senati.voley.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,9 +27,6 @@ public class Reserva {
     @JsonFormat(pattern = "HH:mm:ss")
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
-
-    @Column(name = "estado_reserva", nullable = false, length = 30)
-    private String estadoReserva;
 
     @Column(name = "adelanto", precision = 10, scale = 2)
     private BigDecimal adelanto;
@@ -85,6 +74,14 @@ public class Reserva {
         this.horaFin = horaFin;
     }
 
+    public BigDecimal getAdelanto() {
+        return adelanto;
+    }
+
+    public void setAdelanto(BigDecimal adelanto) {
+        this.adelanto = adelanto;
+    }
+
     public Cliente getCliente() {
         return cliente;
     }
@@ -99,21 +96,5 @@ public class Reserva {
 
     public void setCancha(Cancha cancha) {
         this.cancha = cancha;
-    }
-
-    public String getEstadoReserva() {
-        return estadoReserva;
-    }
-
-    public void setEstadoReserva(String estadoReserva) {
-        this.estadoReserva = estadoReserva;
-    }
-
-    public BigDecimal getAdelanto() {
-        return adelanto;
-    }
-
-    public void setAdelanto(BigDecimal adelanto) {
-        this.adelanto = adelanto;
     }
 }

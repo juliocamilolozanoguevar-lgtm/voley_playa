@@ -48,4 +48,8 @@ public class Cancha {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public String getNombreVisible() {
+        return nombreCancha;
+    }
 }

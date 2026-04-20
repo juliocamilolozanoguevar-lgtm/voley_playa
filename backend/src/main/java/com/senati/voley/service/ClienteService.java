@@ -27,13 +27,10 @@ public class ClienteService {
     }
 
     public Cliente guardarCliente(Cliente cliente) {
-        if (cliente.getDni() == null || cliente.getDni().isBlank()
-                || cliente.getNombre() == null || cliente.getNombre().isBlank()
-                || cliente.getApellido() == null || cliente.getApellido().isBlank()) {
-            throw new IllegalArgumentException("Completa los datos del cliente.");
-        }
+        validarDatos(cliente);
 
         String dni = cliente.getDni().trim();
+
         if (clienteRepository.findByDni(dni).isPresent()) {
             throw new IllegalArgumentException("Ya existe un cliente con ese DNI.");
         }
@@ -41,20 +38,18 @@ public class ClienteService {
         cliente.setDni(dni);
         cliente.setNombre(cliente.getNombre().trim());
         cliente.setApellido(cliente.getApellido().trim());
+
         return clienteRepository.save(cliente);
     }
 
     public Cliente actualizarCliente(Integer id, Cliente datos) {
-        if (datos.getDni() == null || datos.getDni().isBlank()
-                || datos.getNombre() == null || datos.getNombre().isBlank()
-                || datos.getApellido() == null || datos.getApellido().isBlank()) {
-            throw new IllegalArgumentException("Completa los datos del cliente.");
-        }
+        validarDatos(datos);
 
         Cliente existente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("El cliente no existe."));
 
         String dni = datos.getDni().trim();
+
         clienteRepository.findByDni(dni).ifPresent(otro -> {
             if (!otro.getIdCliente().equals(id)) {
                 throw new IllegalArgumentException("Ya existe otro cliente con ese DNI.");
@@ -64,10 +59,27 @@ public class ClienteService {
         existente.setDni(dni);
         existente.setNombre(datos.getNombre().trim());
         existente.setApellido(datos.getApellido().trim());
+
         return clienteRepository.save(existente);
     }
 
     public void eliminarCliente(Integer id) {
+        if (!clienteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("El cliente no existe.");
+        }
+
         clienteRepository.deleteById(id);
+    }
+
+    private void validarDatos(Cliente cliente) {
+        if (cliente.getDni() == null || cliente.getDni().isBlank()
+                || cliente.getNombre() == null || cliente.getNombre().isBlank()
+                || cliente.getApellido() == null || cliente.getApellido().isBlank()) {
+            throw new IllegalArgumentException("Completa los datos del cliente.");
+        }
+
+        if (cliente.getDni().trim().length() != 8) {
+            throw new IllegalArgumentException("El DNI debe tener 8 dígitos.");
+        }
     }
 }
