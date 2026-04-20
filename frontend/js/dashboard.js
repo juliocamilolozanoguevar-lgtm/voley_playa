@@ -1,150 +1,157 @@
-let reportesCache = {
-  dias: [],
-  semanas: [],
-  meses: [],
-};
-let rangoActivo = "dias";
-
-document.addEventListener("DOMContentLoaded", async () => {
-  bindReportFilters();
-  document.getElementById("btnRefrescarDashboard")?.addEventListener("click", async () => {
-    await cargarDashboard();
-  });
+window.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('btnRefreshDashboard')?.addEventListener('click', cargarDashboard);
+  document.getElementById('tabReportes')?.addEventListener('shown.bs.tab', cargarReportes);
   await cargarDashboard();
 });
 
 async function cargarDashboard() {
-  const alerta = document.getElementById("dashboardAlert");
-  if (alerta) {
-    alerta.classList.add("d-none");
+  const alertBox = document.getElementById('dashboardAlert');
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (alertBox) {
+    alertBox.classList.add('d-none');
   }
 
   try {
-    const resumen = await window.VoleyApi.fetchJson("/dashboard/resumen");
+    // Cargar datos en paralelo
+    const [resumen, clientes, canchas, reservas] = await Promise.all([
+      window.VoleyApi.fetchJson('/dashboard/resumen'),
+      window.VoleyApi.fetchJson('/clientes'),
+      window.VoleyApi.fetchJson('/canchas'),
+      window.VoleyApi.fetchJson('/reservas'),
+    ]);
 
-    actualizarTexto("totalReservasHoy", `${resumen.totalReservasHoy ?? 0}`);
-    actualizarTexto("horasOcupadas", `${resumen.horasOcupadasHoy ?? 0} H`);
-    actualizarTexto("montoGenerado", formatearMoneda(resumen.montoGeneradoTotal));
-    actualizarTexto("clientesHabituales", `${resumen.clientesHabituales ?? 0}`);
-    actualizarTexto("ingresosHoy", formatearMoneda(resumen.ingresosHoy));
-    actualizarTexto("totalClientes", `${resumen.totalClientes ?? 0}`);
-    actualizarTexto("totalCanchas", `${resumen.totalCanchas ?? 0}`);
-    actualizarTexto("reporteDiaConMasHoras", resumen.diaMayorHoras || "Sin datos");
-    actualizarTexto("reporteMontoDiaMayorHoras", formatearMoneda(resumen.montoDiaMayorHoras));
+    // Filtrar reservas de hoy
+    const reservasHoy = (reservas || []).filter((r) => r.fecha === today);
 
-    reportesCache = {
-      dias: resumen.dias || [],
-      semanas: resumen.semanas || [],
-      meses: resumen.meses || [],
-    };
-
-    renderizarReportes();
-    renderizarGraficosActivos();
+    // Actualizar métricas
+    actualizarTexto('ingresosHoy', formatearMoneda(resumen?.ingresosHoy || 0));
+    actualizarTexto('totalReservasHoy', reservasHoy.length);
+    actualizarTexto('totalClientes', (clientes || []).length);
+    actualizarTexto('totalCanchas', (canchas || []).length);
   } catch (error) {
-    actualizarTexto("totalReservasHoy", "0");
-    actualizarTexto("horasOcupadas", "0 H");
-    actualizarTexto("montoGenerado", "S/. 0.00");
-    actualizarTexto("clientesHabituales", "0");
-    actualizarTexto("ingresosHoy", "S/. 0.00");
-    actualizarTexto("totalClientes", "0");
-    actualizarTexto("totalCanchas", "0");
-    actualizarTexto("reporteDiaConMasHoras", "Sin datos");
-    actualizarTexto("reporteMontoDiaMayorHoras", "S/. 0.00");
-    reportesCache = { dias: [], semanas: [], meses: [] };
-    renderizarReportes();
-    renderizarGraficosActivos();
-    mostrarAlerta("dashboardAlert", error.message || "No se pudo conectar con el backend.", "danger");
+    mostrarAlerta('dashboardAlert', error.message || 'No se pudo cargar el dashboard.', 'danger');
   }
 }
 
-function bindReportFilters() {
-  document.querySelectorAll("[data-report-range]").forEach((button) => {
-    button.addEventListener("click", () => {
-      rangoActivo = button.dataset.reportRange || "dias";
-      document.querySelectorAll("[data-report-range]").forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-      renderizarReportes();
-      renderizarGraficosActivos();
-    });
-  });
+async function cargarReportes() {
+  try {
+    const [reservas, clientes, pagos] = await Promise.all([
+      window.VoleyApi.fetchJson('/reservas'),
+      window.VoleyApi.fetchJson('/clientes'),
+      window.VoleyApi.fetchJson('/pagos').catch(() => []),
+    ]);
+
+    renderReservasPorFecha(reservas);
+    renderTopClientes(reservas, clientes);
+    renderReservasPorCancha(reservas);
+    renderIngresosPorMetodo(pagos);
+  } catch (error) {
+    mostrarAlerta('dashboardAlert', error.message || 'No se pudo cargar los reportes.', 'danger');
+  }
 }
 
-function renderizarReportes() {
-  const reportes = reportesCache[rangoActivo] || [];
-  const list = document.getElementById("reportSummaryList");
-  if (!list) {
-    return;
-  }
+function renderReservasPorFecha(reservas) {
+  const container = document.getElementById('reporteReservasPorFecha');
+  if (!container) return;
 
-  if (!reportes.length) {
-    list.innerHTML = `<p class="mb-0">No hay datos disponibles para este periodo.</p>`;
-    return;
-  }
+  const grupos = reservas.reduce((acc, reserva) => {
+    const fecha = reserva.fecha || 'Sin fecha';
+    acc[fecha] = (acc[fecha] || 0) + 1;
+    return acc;
+  }, {});
 
-  list.innerHTML = reportes
-    .map(
-      (item) => `
-        <div class="report-detail-card rounded-3 p-3 mb-3 bg-white shadow-sm">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong>${escapeHtml(item.label)}</strong>
-              <p class="mb-1 small text-secondary">Horas ocupadas: ${item.totalHoras}</p>
-            </div>
-            <div class="text-end">
-              <span class="d-block small text-secondary">Ingresos</span>
-              <strong>${formatearMoneda(item.totalIngresos)}</strong>
-            </div>
-          </div>
+  const html = Object.entries(grupos)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([fecha, total]) => `
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <span>${escapeHtml(fecha)}</span>
+        <span class="badge bg-primary">${total}</span>
+      </div>
+    `)
+    .join('') || '<p class="text-muted mb-0">No hay reservas.</p>';
+
+  container.innerHTML = html;
+}
+
+function renderTopClientes(reservas, clientes) {
+  const container = document.getElementById('reporteTopClientes');
+  if (!container) return;
+
+  const cuentas = reservas.reduce((acc, reserva) => {
+    const id = reserva.cliente?.idCliente || 'sin-id';
+    const nombre = `${reserva.cliente?.nombre || ''} ${reserva.cliente?.apellido || ''}`.trim() || reserva.cliente?.dni || 'Cliente desconocido';
+    const monto = reserva.pago?.monto || 0;
+    acc[id] = acc[id] || { nombre, total: 0, gastado: 0 };
+    acc[id].total += 1;
+    acc[id].gastado += Number(monto);
+    return acc;
+  }, {});
+
+  const top = Object.values(cuentas)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
+  const html = top
+    .map((cliente) => `
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <div>
+          <span>${escapeHtml(cliente.nombre)}</span>
+          <br>
+          <small class="text-muted">${cliente.total} reservas • ${formatearMoneda(cliente.gastado)}</small>
         </div>
-      `
-    )
-    .join("");
+        <span class="badge bg-success">${cliente.total}</span>
+      </div>
+    `)
+    .join('') || '<p class="text-muted mb-0">No hay datos de clientes.</p>';
+
+  container.innerHTML = html;
 }
 
-function renderizarGrafico(containerId, items) {
-  const container = document.getElementById(containerId);
-  if (!container) {
-    return;
-  }
+function renderReservasPorCancha(reservas) {
+  const container = document.getElementById('reporteReservasPorCancha');
+  if (!container) return;
 
-  const data = items.length
-    ? items.map((item) => ({ label: item.label, total: item.totalHoras }))
-    : [
-        { label: "Lun", total: 0 },
-        { label: "Mar", total: 0 },
-        { label: "Mie", total: 0 },
-        { label: "Jue", total: 0 },
-        { label: "Vie", total: 0 },
-        { label: "Sab", total: 0 },
-        { label: "Dom", total: 0 },
-      ];
+  const totales = reservas.reduce((acc, reserva) => {
+    const nombre = reserva.cancha?.nombreCancha || 'Cancha desconocida';
+    acc[nombre] = (acc[nombre] || 0) + 1;
+    return acc;
+  }, {});
 
-  const maximo = Math.max(...data.map((item) => Number(item.total) || 0), 1);
+  const html = Object.entries(totales)
+    .sort(([, a], [, b]) => b - a)
+    .map(([cancha, total]) => `
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <span>${escapeHtml(cancha)}</span>
+        <span class="badge bg-info">${total}</span>
+      </div>
+    `)
+    .join('') || '<p class="text-muted mb-0">No hay datos de canchas.</p>';
 
-  container.innerHTML = data
-    .map((item) => {
-      const total = Number(item.total) || 0;
-      const height = Math.max((total / maximo) * 100, total > 0 ? 12 : 8);
-      return `
-        <div class="chart-bar-item">
-          <div class="chart-bar-track">
-            <div class="chart-bar" style="--chart-height: ${height}%"></div>
-          </div>
-          <span class="chart-bar-label">${escapeHtml(item.label || "")}</span>
-          <span class="chart-bar-value">${total}</span>
-        </div>
-      `;
-    })
-    .join("");
+  container.innerHTML = html;
 }
 
-function renderizarGraficosActivos() {
-  renderizarGrafico("reportChart", reportesCache[rangoActivo] || []);
-}
+function renderIngresosPorMetodo(pagos) {
+  const container = document.getElementById('reporteIngresosPorMetodo');
+  if (!container) return;
 
-function formatearMoneda(valor) {
-  const numero = Number(valor || 0);
-  return `S/. ${numero.toFixed(2)}`;
+  const totales = (pagos || []).reduce((acc, pago) => {
+    const metodo = pago.metodoPago || 'Sin método';
+    acc[metodo] = (acc[metodo] || 0) + Number(pago.monto || 0);
+    return acc;
+  }, {});
+
+  const html = Object.entries(totales)
+    .sort(([, a], [, b]) => b - a)
+    .map(([metodo, total]) => `
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <span>${escapeHtml(metodo)}</span>
+        <span class="badge bg-secondary">${formatearMoneda(total)}</span>
+      </div>
+    `)
+    .join('') || '<p class="text-muted mb-0">No hay ingresos registrados.</p>';
+
+  container.innerHTML = html;
 }
 
 function actualizarTexto(id, valor) {
@@ -156,30 +163,22 @@ function actualizarTexto(id, valor) {
 
 function mostrarAlerta(id, mensaje, tipo) {
   const alerta = document.getElementById(id);
-  if (!alerta) {
-    return;
-  }
-
+  if (!alerta) return;
   alerta.className = `alert app-alert alert-${tipo} rounded-4`;
   alerta.textContent = mensaje;
-  alerta.classList.remove("d-none");
-}
-
-function limpiarAlerta(id) {
-  const alerta = document.getElementById(id);
-  if (!alerta) {
-    return;
-  }
-
-  alerta.textContent = "";
-  alerta.classList.add("d-none");
+  alerta.classList.remove('d-none');
 }
 
 function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function formatearMoneda(valor) {
+  const amount = Number(valor || 0);
+  return `S/. ${amount.toFixed(2)}`;
 }

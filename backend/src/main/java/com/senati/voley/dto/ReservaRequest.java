@@ -1,18 +1,42 @@
 package com.senati.voley.dto;
 
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class ReservaRequest {
+    
+    @NotNull(message = "La fecha es obligatoria")
+    @Future(message = "La fecha debe ser en el futuro")
     private LocalDate fecha;
+    
+    @NotNull(message = "La hora de inicio es obligatoria")
     private LocalTime horaInicio;
+    
+    @NotNull(message = "La hora de fin es obligatoria")
     private LocalTime horaFin;
+    
+    @NotBlank(message = "El DNI del cliente es obligatorio")
+    @Size(min = 8, max = 8, message = "El DNI debe tener 8 dígitos")
     private String clienteDni;
+    
+    @NotBlank(message = "El nombre del cliente es obligatorio")
+    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String clienteNombre;
+    
+    @NotBlank(message = "El apellido del cliente es obligatorio")
+    @Size(min = 2, max = 100, message = "El apellido debe tener entre 2 y 100 caracteres")
     private String clienteApellido;
+    
+    @NotNull(message = "El ID de la cancha es obligatorio")
     private Integer canchaId;
+    
+    @Positive(message = "El monto debe ser mayor a 0")
     private Double monto;
+    
     private String estado;
+    
+    private String metodoPago;
 
     // Getters y Setters
     public LocalDate getFecha() { return fecha; }
@@ -41,4 +65,7 @@ public class ReservaRequest {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    public String getMetodoPago() { return metodoPago; }
+    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
 }

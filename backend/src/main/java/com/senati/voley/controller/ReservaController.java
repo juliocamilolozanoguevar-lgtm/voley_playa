@@ -1,17 +1,21 @@
 package com.senati.voley.controller;
 
+import com.senati.voley.dto.ReservaDisponibilidadDTO;
 import com.senati.voley.dto.ReservaRequest;
 import com.senati.voley.entity.Reserva;
 import com.senati.voley.service.ReservaService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/reservas")
-@CrossOrigin(origins = "*")
 public class ReservaController {
 
     private final ReservaService reservaService;
@@ -21,8 +25,17 @@ public class ReservaController {
     }
 
     @GetMapping
-    public List<Reserva> listar() {
-        return reservaService.listarTodas();
+    public List<Reserva> listar(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return reservaService.listarPorFecha(fecha);
+    }
+
+    @GetMapping("/disponibilidad")
+    public ReservaDisponibilidadDTO consultarDisponibilidad(
+            @RequestParam Integer canchaId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaFin) {
+        return reservaService.consultarDisponibilidad(canchaId, fecha, horaInicio, horaFin);
     }
 
     @PostMapping

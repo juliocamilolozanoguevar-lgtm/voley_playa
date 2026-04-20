@@ -26,6 +26,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
                                  @Param("horaInicio") LocalTime horaInicio,
                                  @Param("horaFin") LocalTime horaFin);
 
+    @Query("SELECT r FROM Reserva r WHERE r.cancha.idCancha = :canchaId AND r.fecha = :fecha")
+    List<Reserva> findByCanchaAndFecha(@Param("canchaId") Integer canchaId,
+                                       @Param("fecha") LocalDate fecha);
+
     @Query("SELECT COUNT(r) FROM Reserva r WHERE r.fecha = CURRENT_DATE")
     Long countReservasHoy();
 }

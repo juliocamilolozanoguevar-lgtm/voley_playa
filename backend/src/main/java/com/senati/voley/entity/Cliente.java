@@ -22,6 +22,9 @@ public class Cliente {
     @Column(name = "apellido", nullable = false, length = 100)
     private String apellido;
 
+    @Column(name = "celular", length = 20)
+    private String celular;
+
     @OneToMany(mappedBy = "cliente")
     private List<Reserva> reservas = new ArrayList<>();
 
@@ -46,6 +49,9 @@ public class Cliente {
 
     public String getApellido() { return apellido; }
     public void setApellido(String apellido) { this.apellido = apellido; }
+
+    public String getCelular() { return celular; }
+    public void setCelular(String celular) { this.celular = celular; }
 
     public List<Reserva> getReservas() { return reservas; }
     public void setReservas(List<Reserva> reservas) { this.reservas = reservas; }
