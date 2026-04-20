@@ -338,15 +338,15 @@ function bindClienteForm() {
       await window.VoleyApi.fetchJson("/reservas", {
         method: "POST",
         body: JSON.stringify({
-          fecha,
-          horaInicio,
-          horaFin,
+          fecha: fecha,
+          horaInicio: horaInicio + ":00",
+          horaFin: horaFin + ":00",
           clienteDni: dni,
           clienteNombre: nombre,
           clienteApellido: apellido,
-          canchaId,
-          monto,
-          estado,
+          canchaId: canchaId,
+          monto: monto,
+          estado: estado,
         }),
       });
 

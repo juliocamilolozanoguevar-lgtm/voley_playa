@@ -146,11 +146,12 @@ function bindReservaEditForm() {
       await window.VoleyApi.fetchJson(`/reservas/${id}`, {
         method: "PUT",
         body: JSON.stringify({
-          fecha,
-          horaInicio,
-          horaFin,
-          canchaId,
-          monto,
+          fecha: fecha,
+          horaInicio: horaInicio + ":00",
+          horaFin: horaFin + ":00",
+          canchaId: canchaId,
+          monto: monto,
+          estado: "PENDIENTE",
         }),
       });
 
