@@ -1,0 +1,313 @@
+// Datos de ejemplo para el dashboard
+let currentFilter = 'day';
+
+// Datos generales
+const generalData = {
+    horasAlquiladas: 156,
+    cantidadClientes: 89,
+    canchasOcupadas: 6,
+    totalCanchas: 8,
+    ingresosTotales: 2450
+};
+
+// Datos para reporte diario
+const dailyData = {
+    schedule: [
+        { hour: '08:00', court1: 'Ocupado', court2: 'Libre', court3: 'Libre', court4: 'Ocupado' },
+        { hour: '09:00', court1: 'Ocupado', court2: 'Ocupado', court3: 'Libre', court4: 'Libre' },
+        { hour: '10:00', court1: 'Libre', court2: 'Ocupado', court3: 'Ocupado', court4: 'Libre' },
+        { hour: '11:00', court1: 'Ocupado', court2: 'Libre', court3: 'Ocupado', court4: 'Ocupado' },
+        { hour: '12:00', court1: 'Libre', court2: 'Libre', court3: 'Ocupado', court4: 'Ocupado' },
+        { hour: '13:00', court1: 'Ocupado', court2: 'Ocupado', court3: 'Libre', court4: 'Libre' },
+        { hour: '14:00', court1: 'Ocupado', court2: 'Ocupado', court3: 'Ocupado', court4: 'Libre' },
+        { hour: '15:00', court1: 'Libre', court2: 'Ocupado', court3: 'Ocupado', court4: 'Ocupado' },
+        { hour: '16:00', court1: 'Ocupado', court2: 'Libre', court3: 'Ocupado', court4: 'Libre' },
+        { hour: '17:00', court1: 'Ocupado', court2: 'Ocupado', court3: 'Libre', court4: 'Ocupado' },
+        { hour: '18:00', court1: 'Ocupado', court2: 'Ocupado', court3: 'Ocupado', court4: 'Ocupado' },
+        { hour: '19:00', court1: 'Ocupado', court2: 'Ocupado', court3: 'Ocupado', court4: 'Libre' },
+        { hour: '20:00', court1: 'Ocupado', court2: 'Libre', court3: 'Ocupado', court4: 'Ocupado' },
+        { hour: '21:00', court1: 'Libre', court2: 'Ocupado', court3: 'Libre', court4: 'Ocupado' },
+        { hour: '22:00', court1: 'Ocupado', court2: 'Libre', court3: 'Libre', court4: 'Libre' }
+    ],
+    reservations: [
+        { cliente: 'Juan Pérez', cancha: 'Cancha 1', inicio: '08:00', fin: '10:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'María García', cancha: 'Cancha 2', inicio: '09:00', fin: '11:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'Carlos López', cancha: 'Cancha 4', inicio: '08:00', fin: '09:00', monto: 30, estado: 'Confirmada' },
+        { cliente: 'Ana Martínez', cancha: 'Cancha 3', inicio: '10:00', fin: '12:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'Pedro Sánchez', cancha: 'Cancha 1', inicio: '11:00', fin: '13:00', monto: 60, estado: 'Pendiente' },
+        { cliente: 'Laura Fernández', cancha: 'Cancha 2', inicio: '13:00', fin: '15:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'Roberto Díaz', cancha: 'Cancha 3', inicio: '14:00', fin: '16:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'Sofia Ruiz', cancha: 'Cancha 4', inicio: '15:00', fin: '17:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'Diego Torres', cancha: 'Cancha 1', inicio: '17:00', fin: '19:00', monto: 60, estado: 'Confirmada' },
+        { cliente: 'Valentina Gómez', cancha: 'Cancha 2', inicio: '18:00', fin: '20:00', monto: 60, estado: 'Confirmada' }
+    ],
+    hourlyActivity: [2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8, 6, 4, 2]
+};
+
+// Datos para reporte semanal
+const weeklyData = {
+    days: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+    reservations: [12, 15, 18, 20, 25, 30, 28],
+    hours: [24, 30, 36, 40, 50, 60, 56],
+    clients: [18, 22, 25, 28, 35, 42, 38],
+    income: [720, 900, 1080, 1200, 1500, 1800, 1680],
+    occupation: [30, 38, 45, 50, 63, 75, 70],
+    topCourts: [
+        { name: 'Cancha 1', hours: 45, income: 1350 },
+        { name: 'Cancha 2', hours: 38, income: 1140 },
+        { name: 'Cancha 3', hours: 42, income: 1260 },
+        { name: 'Cancha 4', hours: 35, income: 1050 }
+    ]
+};
+
+// Datos para reporte mensual
+const monthlyData = {
+    weeks: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+    reservations: [85, 92, 108, 95],
+    income: [2550, 2760, 3240, 2850],
+    clients: [95, 102, 118, 105],
+    distribution: {
+        labels: ['Cancha 1', 'Cancha 2', 'Cancha 3', 'Cancha 4'],
+        data: [180, 165, 190, 155]
+    },
+    metrics: {
+        totalReservations: 380,
+        totalHours: 690,
+        uniqueClients: 245,
+        totalIncome: 11400,
+        averageOccupation: 68,
+        mostPopularCourt: 'Cancha 3'
+    }
+};
+
+// Inicializar dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    updateGeneralStats();
+    loadDayView();
+    setupFilters();
+    initializeCharts();
+});
+
+// Actualizar estadísticas generales
+function updateGeneralStats() {
+    document.getElementById('horasAlquiladas').textContent = generalData.horasAlquiladas;
+    document.getElementById('cantidadClientes').textContent = generalData.cantidadClientes;
+    document.getElementById('canchasOcupadas').textContent = generalData.canchasOcupadas;
+    document.getElementById('ingresosTotales').textContent = `$${generalData.ingresosTotales}`;
+    
+    const ocupacionPercent = (generalData.canchasOcupadas / generalData.totalCanchas) * 100;
+    document.getElementById('ocupacionProgress').style.width = `${ocupacionPercent}%`;
+}
+
+// Configurar filtros
+function setupFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            currentFilter = filter;
+            
+            // Ocultar todas las vistas
+            document.querySelectorAll('.report-view').forEach(view => {
+                view.style.display = 'none';
+            });
+            
+            // Mostrar la vista seleccionada
+            const selectedView = document.querySelector(`.report-view[data-view="${filter}"]`);
+            if (selectedView) {
+                selectedView.style.display = 'block';
+                selectedView.classList.add('active');
+            }
+            
+            // Cargar datos según el filtro
+            if (filter === 'day') loadDayView();
+            else if (filter === 'week') loadWeekView();
+            else if (filter === 'month') loadMonthView();
+        });
+    });
+}
+
+// Cargar vista de día
+function loadDayView() {
+    // Cargar horario
+    const tbody = document.getElementById('daySchedule');
+    tbody.innerHTML = '';
+    dailyData.schedule.forEach(item => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = item.hour;
+        row.insertCell(1).innerHTML = getStatusBadge(item.court1);
+        row.insertCell(2).innerHTML = getStatusBadge(item.court2);
+        row.insertCell(3).innerHTML = getStatusBadge(item.court3);
+        row.insertCell(4).innerHTML = getStatusBadge(item.court4);
+    });
+    
+    // Cargar reservas diarias
+    const reservationsTbody = document.querySelector('#dailyReservations tbody');
+    reservationsTbody.innerHTML = '';
+    dailyData.reservations.forEach(res => {
+        const row = reservationsTbody.insertRow();
+        row.insertCell(0).textContent = res.cliente;
+        row.insertCell(1).textContent = res.cancha;
+        row.insertCell(2).textContent = res.inicio;
+        row.insertCell(3).textContent = res.fin;
+        row.insertCell(4).textContent = `$${res.monto}`;
+        row.insertCell(5).innerHTML = getEstadoBadge(res.estado);
+    });
+}
+
+// Cargar vista de semana
+function loadWeekView() {
+    // Cargar top canchas
+    const topCourtsTbody = document.getElementById('topCourtsWeek');
+    topCourtsTbody.innerHTML = '';
+    weeklyData.topCourts.forEach(court => {
+        const row = topCourtsTbody.insertRow();
+        row.insertCell(0).textContent = court.name;
+        row.insertCell(1).textContent = court.hours;
+        row.insertCell(2).textContent = `$${court.income}`;
+    });
+    
+    // Cargar tabla semanal
+    const weeklyTableTbody = document.querySelector('#weeklyReportTable tbody');
+    weeklyTableTbody.innerHTML = '';
+    for (let i = 0; i < weeklyData.days.length; i++) {
+        const row = weeklyTableTbody.insertRow();
+        row.insertCell(0).textContent = weeklyData.days[i];
+        row.insertCell(1).textContent = weeklyData.reservations[i];
+        row.insertCell(2).textContent = weeklyData.hours[i];
+        row.insertCell(3).textContent = weeklyData.clients[i];
+        row.insertCell(4).textContent = `$${weeklyData.income[i]}`;
+        row.insertCell(5).innerHTML = `
+            <div class="progress" style="height: 20px;">
+                <div class="progress-bar bg-success" style="width: ${weeklyData.occupation[i]}%">
+                    ${weeklyData.occupation[i]}%
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Cargar vista de mes
+function loadMonthView() {
+    const metricsContainer = document.getElementById('monthlyMetrics');
+    metricsContainer.innerHTML = `
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h6>Total Reservas</h6>
+                    <h3>${monthlyData.metrics.totalReservations}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h6>Horas Alquiladas</h6>
+                    <h3>${monthlyData.metrics.totalHours}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h6>Clientes Únicos</h6>
+                    <h3>${monthlyData.metrics.uniqueClients}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h6>Ingresos Totales</h6>
+                    <h3>$${monthlyData.metrics.totalIncome}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-secondary text-white">
+                <div class="card-body text-center">
+                    <h6>Ocupación Promedio</h6>
+                    <h3>${monthlyData.metrics.averageOccupation}%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h6>Cancha Más Popular</h6>
+                    <h3>${monthlyData.metrics.mostPopularCourt}</h3>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Inicializar todos los gráficos
+let hourlyChart, weeklyChart, monthlyTrendChart, distributionChart;
+
+function initializeCharts() {
+    // Gráfico de actividad por hora
+    const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+    hourlyChart = new Chart(hourlyCtx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+            datasets: [{
+                label: 'Canchas Ocupadas',
+                data: dailyData.hourlyActivity,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+    
+    // Gráfico semanal
+    const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+    weeklyChart = new Chart(weeklyCtx, {
+        type: 'bar',
+        data: {
+            labels: weeklyData.days,
+            datasets: [
+                {
+                    label: 'Reservas',
+                    data: weeklyData.reservations,
+                    backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                    borderColor: '#667eea',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Ingresos ($)',
+                    data: weeklyData.income,
+                    backgroundColor: 'rgba(67, 233, 123, 0.6)',
+                    borderColor: '#43e97b',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+    
+    // Gráfico de tendencias mensuales
+    const monthlyCtx = document.getElementById
