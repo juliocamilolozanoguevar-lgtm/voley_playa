@@ -5,8 +5,9 @@ import com.senati.voley.entity.Reserva;
 import com.senati.voley.service.ReservaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reservas")
@@ -24,24 +25,16 @@ public class ReservaController {
         return reservaService.listarTodas();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Reserva> buscar(@PathVariable Integer id) {
-        return reservaService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
     @PostMapping
-    public ResponseEntity<Reserva> registrar(@RequestBody ReservaRequest request) {
-        return ResponseEntity.ok(reservaService.registrarReserva(request));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Reserva> actualizar(
-            @PathVariable Integer id,
-            @RequestBody ReservaRequest request
-    ) {
-        return ResponseEntity.ok(reservaService.actualizarReserva(id, request));
+    public ResponseEntity<?> registrar(@RequestBody ReservaRequest request) {
+        try {
+            Reserva reserva = reservaService.registrarReserva(request);
+            return ResponseEntity.ok(reserva);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 
     @DeleteMapping("/{id}")

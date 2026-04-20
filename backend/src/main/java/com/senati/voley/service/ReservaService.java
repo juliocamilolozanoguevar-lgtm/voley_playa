@@ -1,19 +1,13 @@
 package com.senati.voley.service;
 
 import com.senati.voley.dto.ReservaRequest;
-import com.senati.voley.entity.Cancha;
-import com.senati.voley.entity.Cliente;
-import com.senati.voley.entity.Reserva;
-import com.senati.voley.exception.ResourceNotFoundException;
-import com.senati.voley.repository.CanchaRepository;
-import com.senati.voley.repository.ClienteRepository;
-import com.senati.voley.repository.ReservaRepository;
+import com.senati.voley.entity.*;
+import com.senati.voley.repository.*;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservaService {
@@ -21,99 +15,93 @@ public class ReservaService {
     private final ReservaRepository reservaRepository;
     private final ClienteRepository clienteRepository;
     private final CanchaRepository canchaRepository;
+    private final PagoRepository pagoRepository;
 
-    public ReservaService(
-            ReservaRepository reservaRepository,
-            ClienteRepository clienteRepository,
-            CanchaRepository canchaRepository
-    ) {
+    public ReservaService(ReservaRepository reservaRepository,
+                          ClienteRepository clienteRepository,
+                          CanchaRepository canchaRepository,
+                          PagoRepository pagoRepository) {
         this.reservaRepository = reservaRepository;
         this.clienteRepository = clienteRepository;
         this.canchaRepository = canchaRepository;
+        this.pagoRepository = pagoRepository;
     }
 
     public List<Reserva> listarTodas() {
-        return reservaRepository.findAllByOrderByFechaDescHoraInicioDesc();
+        return reservaRepository.findAll();
     }
 
-    public Optional<Reserva> buscarPorId(Integer id) {
-        return reservaRepository.findById(id);
-    }
-
+    @Transactional
     public Reserva registrarReserva(ReservaRequest request) {
-        validarReserva(request);
+        // Validar horario
+        validarHorario(request.getHoraInicio(), request.getHoraFin());
 
-        Cliente cliente = clienteRepository.findById(request.idCliente())
-                .orElseThrow(() -> new ResourceNotFoundException("El cliente no existe."));
+        // Buscar o crear cliente
+        Cliente cliente = clienteRepository.findByDni(request.getClienteDni())
+                .orElseGet(() -> {
+                    Cliente nuevoCliente = new Cliente();
+                    nuevoCliente.setDni(request.getClienteDni());
+                    nuevoCliente.setNombre(request.getClienteNombre());
+                    nuevoCliente.setApellido(request.getClienteApellido());
+                    return clienteRepository.save(nuevoCliente);
+                });
 
-        Cancha cancha = canchaRepository.findById(request.idCancha())
-                .orElseThrow(() -> new ResourceNotFoundException("La cancha no existe."));
+        // Validar cancha
+        Cancha cancha = canchaRepository.findById(request.getCanchaId())
+                .orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
 
+        // Validar disponibilidad
+        validarDisponibilidad(cancha.getIdCancha(), request.getFecha(),
+                request.getHoraInicio(), request.getHoraFin());
+
+        // Crear reserva
         Reserva reserva = new Reserva();
-        reserva.setFecha(request.fecha());
-        reserva.setHoraInicio(request.horaInicio());
-        reserva.setHoraFin(request.horaFin());
-        reserva.setAdelanto(normalizarAdelanto(request.adelanto()));
+        reserva.setFecha(request.getFecha());
+        reserva.setHoraInicio(request.getHoraInicio());
+        reserva.setHoraFin(request.getHoraFin());
         reserva.setCliente(cliente);
         reserva.setCancha(cancha);
 
-        return reservaRepository.save(reserva);
-    }
+        Reserva reservaGuardada = reservaRepository.save(reserva);
 
-    public Reserva actualizarReserva(Integer id, ReservaRequest request) {
-        validarReserva(request);
-
-        Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("La reserva no existe."));
-
-        Cliente cliente = clienteRepository.findById(request.idCliente())
-                .orElseThrow(() -> new ResourceNotFoundException("El cliente no existe."));
-
-        Cancha cancha = canchaRepository.findById(request.idCancha())
-                .orElseThrow(() -> new ResourceNotFoundException("La cancha no existe."));
-
-        reserva.setFecha(request.fecha());
-        reserva.setHoraInicio(request.horaInicio());
-        reserva.setHoraFin(request.horaFin());
-        reserva.setAdelanto(normalizarAdelanto(request.adelanto()));
-        reserva.setCliente(cliente);
-        reserva.setCancha(cancha);
-
-        return reservaRepository.save(reserva);
-    }
-
-    public void eliminarReserva(Integer id) {
-        if (!reservaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("La reserva no existe.");
+        // Registrar pago
+        if (request.getMonto() != null && request.getMonto() > 0) {
+            Pago pago = new Pago();
+            pago.setMonto(BigDecimal.valueOf(request.getMonto()));
+            pago.setReserva(reservaGuardada);
+            pagoRepository.save(pago);
         }
 
+        return reservaGuardada;
+    }
+
+    @Transactional
+    public void eliminarReserva(Integer id) {
         reservaRepository.deleteById(id);
     }
 
-    private void validarReserva(ReservaRequest request) {
-        if (request.fecha() == null ||
-                request.horaInicio() == null ||
-                request.horaFin() == null ||
-                request.idCliente() == null ||
-                request.idCancha() == null) {
-
-            throw new IllegalArgumentException("Completa todos los campos.");
+    private void validarHorario(LocalTime inicio, LocalTime fin) {
+        if (inicio.isAfter(fin)) {
+            throw new RuntimeException("La hora de inicio debe ser menor a la hora de fin");
         }
 
-        if (!request.horaFin().isAfter(request.horaInicio())) {
-            throw new IllegalArgumentException("La hora final debe ser mayor que la inicial.");
+        long duracion = java.time.Duration.between(inicio, fin).toHours();
+        if (duracion < 1) {
+            throw new RuntimeException("La reserva debe durar al menos 1 hora");
+        }
+
+        if (inicio.isBefore(LocalTime.of(8, 0)) || fin.isAfter(LocalTime.of(22, 0))) {
+            throw new RuntimeException("El horario de reserva es de 8:00 AM a 10:00 PM");
         }
     }
 
-    private BigDecimal normalizarAdelanto(BigDecimal adelanto) {
-        if (adelanto == null) {
-            return BigDecimal.ZERO;
-        }
+    private void validarDisponibilidad(Integer canchaId, java.time.LocalDate fecha,
+                                       LocalTime horaInicio, LocalTime horaFin) {
+        List<Reserva> conflictos = reservaRepository.findConflictos(
+                canchaId, fecha, horaInicio, horaFin);
 
-        if (adelanto.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("El adelanto no puede ser negativo.");
+        if (!conflictos.isEmpty()) {
+            throw new RuntimeException("La cancha no está disponible en ese horario");
         }
-
-        return adelanto.setScale(2, RoundingMode.HALF_UP);
     }
 }

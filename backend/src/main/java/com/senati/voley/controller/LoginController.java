@@ -3,12 +3,8 @@ package com.senati.voley.controller;
 import com.senati.voley.dto.LoginRequest;
 import com.senati.voley.entity.Usuario;
 import com.senati.voley.repository.UsuarioRepository;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,36 +21,38 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginRequest datos) {
-        if (datos.username() == null || datos.username().isBlank()
-                || datos.password() == null || datos.password().isBlank()) {
-            return respuesta("error", "Completa usuario y contrasena.", null);
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (request.getUsername() == null || request.getUsername().isBlank()
+                || request.getPassword() == null || request.getPassword().isBlank()) {
+            response.put("status", "error");
+            response.put("message", "Complete usuario y contraseña");
+            return ResponseEntity.badRequest().body(response);
         }
 
-        Optional<Usuario> usuarioDb = usuarioRepository.findByUsername(datos.username().trim());
+        Optional<Usuario> usuarioDb = usuarioRepository.findByUsername(request.getUsername().trim());
+
         if (usuarioDb.isEmpty()) {
-            return respuesta("error", "El usuario no existe en la base de datos.", null);
+            response.put("status", "error");
+            response.put("message", "Usuario no existe");
+            return ResponseEntity.status(401).body(response);
         }
 
         Usuario usuario = usuarioDb.get();
-        if (!usuario.getPassword().equals(datos.password())) {
-            return respuesta("error", "Contrasena incorrecta.", null);
+
+        // Comparación directa (sin BCrypt por ahora)
+        if (!usuario.getPassword().equals(request.getPassword())) {
+            response.put("status", "error");
+            response.put("message", "Contraseña incorrecta");
+            return ResponseEntity.status(401).body(response);
         }
 
-        return respuesta("ok", null, usuario.getNombreAdmin() == null || usuario.getNombreAdmin().isBlank()
-                ? "Administrador"
-                : usuario.getNombreAdmin());
-    }
+        response.put("status", "ok");
+        response.put("message", "Login exitoso");
+        response.put("nombre", usuario.getNombreAdmin() != null ? usuario.getNombreAdmin() : "Administrador");
+        response.put("username", usuario.getUsername());
 
-    private Map<String, Object> respuesta(String status, String message, String nombre) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("status", status);
-        if (message != null) {
-            payload.put("message", message);
-        }
-        if (nombre != null) {
-            payload.put("nombre", nombre);
-        }
-        return payload;
+        return ResponseEntity.ok(response);
     }
 }

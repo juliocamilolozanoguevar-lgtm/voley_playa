@@ -2,10 +2,7 @@ package com.senati.voley.controller;
 
 import com.senati.voley.dto.DashboardSummaryDTO;
 import com.senati.voley.service.DashboardService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/dashboard")
