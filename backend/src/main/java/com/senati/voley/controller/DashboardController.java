@@ -5,7 +5,7 @@ import com.senati.voley.service.DashboardService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/dashboard")
+@RequestMapping("/dashboard")
 @CrossOrigin(origins = "*")
 public class DashboardController {
 
