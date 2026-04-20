@@ -37,6 +37,18 @@ public class ReservaController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody ReservaRequest request) {
+        try {
+            Reserva reserva = reservaService.actualizarReserva(id, request);
+            return ResponseEntity.ok(reserva);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         reservaService.eliminarReserva(id);

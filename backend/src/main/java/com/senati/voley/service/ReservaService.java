@@ -61,15 +61,55 @@ public class ReservaService {
         reserva.setHoraFin(request.getHoraFin());
         reserva.setCliente(cliente);
         reserva.setCancha(cancha);
+        reserva.setEstado(request.getEstado() != null ? request.getEstado().trim().toUpperCase() : "PENDIENTE");
 
         Reserva reservaGuardada = reservaRepository.save(reserva);
 
-        // Registrar pago
-        if (request.getMonto() != null && request.getMonto() > 0) {
+        // Registrar pago solo si el estado es PAGADO y hay monto válido
+        if ("PAGADO".equalsIgnoreCase(reservaGuardada.getEstado())
+                && request.getMonto() != null && request.getMonto() > 0) {
             Pago pago = new Pago();
             pago.setMonto(BigDecimal.valueOf(request.getMonto()));
             pago.setReserva(reservaGuardada);
             pagoRepository.save(pago);
+        }
+
+        return reservaGuardada;
+    }
+
+    @Transactional
+    public Reserva actualizarReserva(Integer id, ReservaRequest request) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        validarHorario(request.getHoraInicio(), request.getHoraFin());
+
+        Cancha cancha = canchaRepository.findById(request.getCanchaId())
+                .orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
+
+        List<Reserva> conflictos = reservaRepository.findConflictos(
+                cancha.getIdCancha(), request.getFecha(), request.getHoraInicio(), request.getHoraFin());
+        conflictos.removeIf(r -> r.getIdReserva().equals(id));
+        if (!conflictos.isEmpty()) {
+            throw new RuntimeException("La cancha no está disponible en ese horario");
+        }
+
+        reserva.setFecha(request.getFecha());
+        reserva.setHoraInicio(request.getHoraInicio());
+        reserva.setHoraFin(request.getHoraFin());
+        reserva.setCancha(cancha);
+        reserva.setEstado(request.getEstado() != null ? request.getEstado().trim().toUpperCase() : reserva.getEstado());
+
+        Reserva reservaGuardada = reservaRepository.save(reserva);
+
+        if ("PAGADO".equalsIgnoreCase(reservaGuardada.getEstado())
+                && request.getMonto() != null && request.getMonto() > 0) {
+            if (reservaGuardada.getPago() == null) {
+                Pago pago = new Pago();
+                pago.setMonto(BigDecimal.valueOf(request.getMonto()));
+                pago.setReserva(reservaGuardada);
+                pagoRepository.save(pago);
+            }
         }
 
         return reservaGuardada;

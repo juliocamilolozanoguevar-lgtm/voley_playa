@@ -33,6 +33,9 @@ public class Reserva {
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     private Pago pago;
 
+    @Column(name = "estado", length = 20)
+    private String estado;
+
     // Constructores
     public Reserva() {}
 
@@ -65,4 +68,7 @@ public class Reserva {
 
     public Pago getPago() { return pago; }
     public void setPago(Pago pago) { this.pago = pago; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 }

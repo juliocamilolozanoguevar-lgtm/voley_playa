@@ -14,64 +14,44 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function cargarDashboard() {
-  const tbody = document.getElementById("tbodyReservas");
-  if (!tbody) {
-    return;
+  const alerta = document.getElementById("dashboardAlert");
+  if (alerta) {
+    alerta.classList.add("d-none");
   }
-
-  tbody.innerHTML = `
-    <tr class="empty-row">
-      <td colspan="4">Cargando datos del dashboard...</td>
-    </tr>
-  `;
 
   try {
     const resumen = await window.VoleyApi.fetchJson("/dashboard/resumen");
-    limpiarAlerta("dashboardAlert");
 
-    actualizarTexto("ingresosMes", formatearMoneda(resumen.ingresosMes));
-    actualizarTexto("reservasHoy", `${resumen.reservasHoy ?? 0}`);
+    actualizarTexto("totalReservasHoy", `${resumen.totalReservasHoy ?? 0}`);
     actualizarTexto("horasOcupadas", `${resumen.horasOcupadasHoy ?? 0} H`);
-    actualizarTexto("canchasActivas", `${resumen.canchasActivas ?? 0}`);
-
-    actualizarTexto("miniIngresosMes", formatearMoneda(resumen.ingresosMes));
-    actualizarTexto("miniReservasHoy", `${resumen.reservasHoy ?? 0}`);
-    actualizarTexto("miniHorasOcupadas", `${resumen.horasOcupadasHoy ?? 0} H`);
-    actualizarTexto("miniCanchasActivas", `${resumen.canchasActivas ?? 0}`);
-
-    actualizarTexto("reportIngresosMes", formatearMoneda(resumen.ingresosMes));
-    actualizarTexto("reportDiaMasReservas", resumen.diaMasReservas || "Sin datos");
-    actualizarTexto("reportHoraPico", resumen.horaPico || "Sin datos");
-    actualizarTexto("reportClientesTotal", `${resumen.clientesRegistrados ?? 0}`);
+    actualizarTexto("montoGenerado", formatearMoneda(resumen.montoGeneradoTotal));
+    actualizarTexto("clientesHabituales", `${resumen.clientesHabituales ?? 0}`);
+    actualizarTexto("ingresosHoy", formatearMoneda(resumen.ingresosHoy));
+    actualizarTexto("totalClientes", `${resumen.totalClientes ?? 0}`);
+    actualizarTexto("totalCanchas", `${resumen.totalCanchas ?? 0}`);
+    actualizarTexto("reporteDiaConMasHoras", resumen.diaMayorHoras || "Sin datos");
+    actualizarTexto("reporteMontoDiaMayorHoras", formatearMoneda(resumen.montoDiaMayorHoras));
 
     reportesCache = {
-      dias: resumen.reportes?.dias || [],
-      semanas: resumen.reportes?.semanas || [],
-      meses: resumen.reportes?.meses || [],
+      dias: resumen.dias || [],
+      semanas: resumen.semanas || [],
+      meses: resumen.meses || [],
     };
 
-    renderizarReservas(resumen.reservasRecientes || []);
+    renderizarReportes();
     renderizarGraficosActivos();
   } catch (error) {
-    tbody.innerHTML = `
-      <tr class="empty-row">
-        <td colspan="4">No se pudo cargar el dashboard.</td>
-      </tr>
-    `;
-
-    actualizarTexto("ingresosMes", "S/. 0.00");
-    actualizarTexto("reservasHoy", "0");
+    actualizarTexto("totalReservasHoy", "0");
     actualizarTexto("horasOcupadas", "0 H");
-    actualizarTexto("canchasActivas", "0");
-    actualizarTexto("miniIngresosMes", "S/. 0.00");
-    actualizarTexto("miniReservasHoy", "0");
-    actualizarTexto("miniHorasOcupadas", "0 H");
-    actualizarTexto("miniCanchasActivas", "0");
-    actualizarTexto("reportIngresosMes", "S/. 0.00");
-    actualizarTexto("reportDiaMasReservas", "Sin datos");
-    actualizarTexto("reportHoraPico", "Sin datos");
-    actualizarTexto("reportClientesTotal", "0");
+    actualizarTexto("montoGenerado", "S/. 0.00");
+    actualizarTexto("clientesHabituales", "0");
+    actualizarTexto("ingresosHoy", "S/. 0.00");
+    actualizarTexto("totalClientes", "0");
+    actualizarTexto("totalCanchas", "0");
+    actualizarTexto("reporteDiaConMasHoras", "Sin datos");
+    actualizarTexto("reporteMontoDiaMayorHoras", "S/. 0.00");
     reportesCache = { dias: [], semanas: [], meses: [] };
+    renderizarReportes();
     renderizarGraficosActivos();
     mostrarAlerta("dashboardAlert", error.message || "No se pudo conectar con el backend.", "danger");
   }
@@ -83,38 +63,41 @@ function bindReportFilters() {
       rangoActivo = button.dataset.reportRange || "dias";
       document.querySelectorAll("[data-report-range]").forEach((item) => item.classList.remove("active"));
       button.classList.add("active");
+      renderizarReportes();
       renderizarGraficosActivos();
     });
   });
 }
 
-function renderizarReservas(reservas) {
-  const tbody = document.getElementById("tbodyReservas");
-  if (!tbody) {
+function renderizarReportes() {
+  const reportes = reportesCache[rangoActivo] || [];
+  const list = document.getElementById("reportSummaryList");
+  if (!list) {
     return;
   }
 
-  if (!reservas.length) {
-    tbody.innerHTML = `
-      <tr class="empty-row">
-        <td colspan="4">No hay reservas registradas.</td>
-      </tr>
-    `;
+  if (!reportes.length) {
+    list.innerHTML = `<p class="mb-0">No hay datos disponibles para este periodo.</p>`;
     return;
   }
 
-  tbody.innerHTML = reservas
-    .map((reserva) => {
-      const badgeClass = obtenerClaseEstado(reserva.estado);
-      return `
-        <tr>
-          <td>${escapeHtml(reserva.cliente || "Sin cliente")}</td>
-          <td>${escapeHtml(reserva.cancha || "Sin cancha")}</td>
-          <td>${escapeHtml(reserva.fecha || "-")}</td>
-          <td><span class="status-badge ${badgeClass}">${escapeHtml(reserva.estado || "Programada")}</span></td>
-        </tr>
-      `;
-    })
+  list.innerHTML = reportes
+    .map(
+      (item) => `
+        <div class="report-detail-card rounded-3 p-3 mb-3 bg-white shadow-sm">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>${escapeHtml(item.label)}</strong>
+              <p class="mb-1 small text-secondary">Horas ocupadas: ${item.totalHoras}</p>
+            </div>
+            <div class="text-end">
+              <span class="d-block small text-secondary">Ingresos</span>
+              <strong>${formatearMoneda(item.totalIngresos)}</strong>
+            </div>
+          </div>
+        </div>
+      `
+    )
     .join("");
 }
 
@@ -125,7 +108,7 @@ function renderizarGrafico(containerId, items) {
   }
 
   const data = items.length
-    ? items
+    ? items.map((item) => ({ label: item.label, total: item.totalHoras }))
     : [
         { label: "Lun", total: 0 },
         { label: "Mar", total: 0 },
@@ -157,21 +140,6 @@ function renderizarGrafico(containerId, items) {
 
 function renderizarGraficosActivos() {
   renderizarGrafico("reportChart", reportesCache[rangoActivo] || []);
-  renderizarGrafico("miniReportChart", reportesCache[rangoActivo] || []);
-}
-
-function obtenerClaseEstado(estado) {
-  const valor = (estado || "").toLowerCase();
-  if (valor.includes("final")) {
-    return "status-finalizada";
-  }
-  if (valor.includes("pagado")) {
-    return "status-confirmada";
-  }
-  if (valor.includes("cancelado")) {
-    return "status-finalizada";
-  }
-  return "status-pendiente";
 }
 
 function formatearMoneda(valor) {

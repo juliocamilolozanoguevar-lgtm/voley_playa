@@ -41,6 +41,16 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.guardar(cliente));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Cliente> actualizar(@PathVariable Integer id, @RequestBody Cliente cliente) {
+        return clienteService.buscarPorId(id)
+                .map(existing -> {
+                    cliente.setIdCliente(id);
+                    return ResponseEntity.ok(clienteService.guardar(cliente));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         clienteService.eliminar(id);

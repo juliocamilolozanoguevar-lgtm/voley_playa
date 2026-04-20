@@ -64,97 +64,87 @@
     <div id="reservaAlert" class="alert app-alert d-none rounded-4" role="alert"></div>
 
     <div class="row g-4">
-      <div class="col-12 col-xl-5">
-        <article class="card app-card border rounded-3 h-100">
+      <div class="col-12">
+        <article class="card app-card border rounded-3">
           <div class="card-header bg-transparent border-0 px-4 pt-4">
-            <h2 class="h4 mb-0">Nueva reserva</h2>
+            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+              <div>
+                <h2 class="h4 mb-0">Reservas</h2>
+                <p class="mb-0 text-secondary">Solo se muestran cliente, fecha y pago. Puedes editar o eliminar cualquier reserva.</p>
+              </div>
+            </div>
           </div>
-
-          <div class="card-body pt-3">
-            <form id="reservaForm" class="row g-3" novalidate>
-              <div class="col-12 col-md-6">
-                <label for="selectCliente" class="form-label fw-semibold">Cliente</label>
-                <select id="selectCliente" class="form-select rounded-4" required></select>
+          <div class="card-body p-4">
+            <form id="reservaEditForm" class="row g-3 d-none" novalidate>
+              <input type="hidden" id="reservaEditarId" value="">
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">Cliente</label>
+                <input type="text" id="reservaEditarClienteNombre" class="form-control rounded-4" readonly>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label for="selectCancha" class="form-label fw-semibold">Cancha</label>
-                <select id="selectCancha" class="form-select rounded-4" required></select>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">DNI</label>
+                <input type="text" id="reservaEditarClienteDni" class="form-control rounded-4" readonly>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label for="fecha" class="form-label fw-semibold">Fecha</label>
-                <input type="date" id="fecha" class="form-control rounded-4" required>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">Cancha</label>
+                <select id="reservaEditarCancha" class="form-select rounded-4"></select>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label for="horaInicio" class="form-label fw-semibold">Hora inicio</label>
-                <input type="time" id="horaInicio" class="form-control rounded-4" required>
+              <div class="col-12 col-md-3">
+                <label for="reservaEditarFecha" class="form-label fw-semibold">Fecha</label>
+                <input type="date" id="reservaEditarFecha" class="form-control rounded-4" required>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label for="horaFin" class="form-label fw-semibold">Hora fin</label>
-                <input type="time" id="horaFin" class="form-control rounded-4" required>
+              <div class="col-6 col-md-2">
+                <label for="reservaEditarHoraInicio" class="form-label fw-semibold">Inicio</label>
+                <input type="time" id="reservaEditarHoraInicio" class="form-control rounded-4" required>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label for="estadoReserva" class="form-label fw-semibold">Estado de reserva</label>
-                <select id="estadoReserva" class="form-select rounded-4" required>
-                  <option value="PENDIENTE PAGO">Pendiente pago</option>
-                  <option value="PAGADO">Pagado</option>
-                  <option value="CANCELADO">Cancelado</option>
-                </select>
+              <div class="col-6 col-md-2">
+                <label for="reservaEditarHoraFin" class="form-label fw-semibold">Fin</label>
+                <input type="time" id="reservaEditarHoraFin" class="form-control rounded-4" required>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label for="adelantoReserva" class="form-label fw-semibold">Monto de adelanto</label>
-                <input type="number" id="adelantoReserva" class="form-control rounded-4" min="0" step="0.01" value="0">
+              <div class="col-12 col-md-3">
+                <label for="reservaEditarMonto" class="form-label fw-semibold">Monto pagado</label>
+                <input type="number" id="reservaEditarMonto" class="form-control rounded-4" min="0" step="0.01" value="0">
               </div>
-
-              <div class="col-12 d-grid mt-2">
-                <button type="submit" class="btn btn-primary btn-lg rounded-4">Guardar reserva</button>
+              <div id="reservaEditAlert" class="alert app-alert alert-danger d-none rounded-4 col-12" role="alert"></div>
+              <div class="col-12 d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary rounded-4">Actualizar reserva</button>
+                <button type="button" id="reservaCancelarEdicion" class="btn btn-outline-secondary rounded-4">Cancelar</button>
               </div>
             </form>
           </div>
         </article>
       </div>
 
-      <div class="col-12 col-xl-7">
+      <div class="col-12">
         <article class="card app-card border rounded-3 h-100">
-          <div class="card-header bg-transparent border-0 px-4 pt-4">
-            <h2 class="h4 mb-0">Listado de reservas</h2>
-          </div>
-
-          <div class="card-body pt-3">
-            <div class="mb-3">
-              <label for="buscarReservaCliente" class="form-label fw-semibold">Buscar cliente</label>
-              <input type="search" id="buscarReservaCliente" class="form-control rounded-4" placeholder="Escribe nombre, apellido o DNI">
+          <div class="card-header bg-transparent border-0 px-4 pt-4 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+            <div>
+              <h2 class="h4 mb-1">Listado de reservas</h2>
+              <p class="small text-secondary mb-0">Solo cliente, fecha y estado de pago.</p>
             </div>
+            <div class="input-group w-100 w-md-50">
+              <span class="input-group-text bg-white border-0"><i class="fa-solid fa-search"></i></span>
+              <input type="search" id="buscarReservaCliente" class="form-control rounded-4" placeholder="Buscar cliente o DNI">
+            </div>
+          </div>
+          <div class="card-body pt-3 px-4 pb-4">
             <div class="table-responsive">
               <table class="table align-middle app-table mb-0">
                 <thead>
                   <tr>
-                    <th>Fecha</th>
-                    <th>Hora</th>
                     <th>Cliente</th>
-                    <th>Cancha</th>
-                    <th>Estado</th>
-                    <th>Adelanto</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="tablaReservas"></tbody>
-              </table>
-            </div>
+                    <th>Fecha</th>
+                        <th>Pagado</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaReservas"></tbody>
+                  </table>
+                </div>
+              </div>
+            </article>
           </div>
-        </article>
-      </div>
-    </div>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../js/api-config.js"></script>
-  <script src="../js/ui-shell.js"></script>
+        </div>
   <script src="../js/reservas.js"></script>
 </body>
 </html>

@@ -12,6 +12,7 @@ public class ReservaRequest {
     private String clienteApellido;
     private Integer canchaId;
     private Double monto;
+    private String estado;
 
     // Getters y Setters
     public LocalDate getFecha() { return fecha; }
@@ -37,4 +38,7 @@ public class ReservaRequest {
 
     public Double getMonto() { return monto; }
     public void setMonto(Double monto) { this.monto = monto; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 }
