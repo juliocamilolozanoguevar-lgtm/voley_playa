@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clientes | Voley Diloz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css?v=20260422c">
+    <link rel="stylesheet" href="../css/style.css?v=20260422d">
 </head>
 <body class="page-body">
     <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
@@ -32,7 +32,7 @@
         <div class="container">
             <div class="mb-4">
                 <h1 class="page-title">Clientes y reservas</h1>
-                <p class="helper-text mb-0">En esta pestaña puede registrar al cliente y la reserva al mismo tiempo.</p>
+                <p class="helper-text mb-0">Use esta pestaña para registrar al cliente y completar la reserva desde la disponibilidad real de la cancha.</p>
             </div>
 
             <div id="mensajeCliente"></div>
@@ -62,29 +62,33 @@
                                 <label for="fecha" class="form-label">Fecha</label>
                                 <input type="date" id="fecha" class="form-control">
                             </div>
-                            <div class="col-12 col-md-2">
-                                <label for="horaInicio" class="form-label">Inicio</label>
-                                <input type="time" id="horaInicio" class="form-control" min="08:00" max="22:00" step="1800">
-                            </div>
-                            <div class="col-12 col-md-2">
-                                <label for="horaFin" class="form-label">Fin</label>
-                                <input type="time" id="horaFin" class="form-control" min="08:00" max="22:00" step="1800">
-                            </div>
                             <div class="col-12 col-md-4">
                                 <label for="monto" class="form-label">Adelanto (opcional)</label>
                                 <input type="number" id="monto" class="form-control" min="0" step="0.01" placeholder="0.00">
                             </div>
-                        </div>
-
-                        <div class="availability-box mt-4">
-                            <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 align-items-lg-center mb-3">
-                                <div>
-                                    <h2 class="h6 mb-1">Horarios disponibles</h2>
-                                    <p class="helper-text mb-0">Seleccione una cancha y una fecha para consultar disponibilidad.</p>
+                            <div class="col-12">
+                                <div class="availability-box">
+                                    <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 align-items-lg-center mb-3">
+                                        <div>
+                                            <h2 class="h6 mb-1">Horarios disponibles</h2>
+                                            <p class="helper-text mb-0">Seleccione el horario de inicio tocando uno de los espacios libres.</p>
+                                        </div>
+                                        <div id="estadoDisponibilidad" class="helper-text"></div>
+                                    </div>
+                                    <div id="horariosDisponibles" class="slot-grid"></div>
                                 </div>
-                                <div id="estadoDisponibilidad" class="helper-text"></div>
                             </div>
-                            <div id="horariosDisponibles" class="slot-grid"></div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Inicio seleccionado</label>
+                                <div class="selected-slot" id="horaInicioSeleccionada">Seleccione un horario disponible</div>
+                                <input type="hidden" id="horaInicio">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="horaFin" class="form-label">Horario de fin</label>
+                                <select id="horaFin" class="form-select">
+                                    <option value="">Seleccione el horario final</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="d-flex flex-wrap gap-2 mt-4">
@@ -144,7 +148,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/config.js?v=20260422c"></script>
-    <script src="../js/clientes.js?v=20260422c"></script>
+    <script src="../js/config.js?v=20260422d"></script>
+    <script src="../js/clientes.js?v=20260422d"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Voley Diloz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css?v=20260422c">
+    <link rel="stylesheet" href="../css/style.css?v=20260422d">
 </head>
 <body class="page-body">
     <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
@@ -32,7 +32,7 @@
         <div class="container">
             <div class="mb-4">
                 <h1 class="page-title">Dashboard</h1>
-                <p class="helper-text mb-0">Resumen general del sistema conectado a la base de datos.</p>
+                <p class="helper-text mb-0">Resumen general e ingresos registrados en la base de datos.</p>
             </div>
 
             <div id="mensajeDashboard"></div>
@@ -72,55 +72,37 @@
                 </div>
             </div>
 
-            <div class="row g-4">
-                <div class="col-12 col-xl-5">
-                    <div class="card section-card h-100">
-                        <div class="card-header">Clientes registrados</div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>DNI</th>
-                                            <th>Nombre</th>
-                                            <th>Apellido</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tablaClientesDashboard"></tbody>
-                                </table>
+            <div class="card section-card">
+                <div class="card-header">Ingresos</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="income-card">
+                                <p class="income-label">Ingresos del dia</p>
+                                <p class="income-value" id="ingresosDia">S/ 0.00</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="income-card">
+                                <p class="income-label">Ingresos de la semana</p>
+                                <p class="income-value" id="ingresosSemana">S/ 0.00</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="income-card">
+                                <p class="income-label">Ingresos del mes</p>
+                                <p class="income-value" id="ingresosMes">S/ 0.00</p>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-xl-7">
-                    <div class="card section-card h-100">
-                        <div class="card-header">Reservas registradas</div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Cliente</th>
-                                            <th>Cancha</th>
-                                            <th>Fecha</th>
-                                            <th>Horario</th>
-                                            <th>Pago</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tablaReporte"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="helper-text mt-3 mb-0">Los ingresos se calculan con los pagos registrados en la base de datos.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/config.js?v=20260422c"></script>
-    <script src="../js/dashboard.js?v=20260422c"></script>
+    <script src="../js/config.js?v=20260422d"></script>
+    <script src="../js/dashboard.js?v=20260422d"></script>
 </body>
 </html>

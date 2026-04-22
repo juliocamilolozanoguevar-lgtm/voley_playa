@@ -23,66 +23,52 @@ async function cargarDashboard() {
         document.getElementById("totalCanchas").textContent = canchas.length;
         document.getElementById("totalPagos").textContent = pagos.length;
 
-        renderTablaClientes(clientes);
-        renderTablaReservas(reservas);
+        const ingresos = calcularIngresos(pagos);
+        document.getElementById("ingresosDia").textContent = formatearMoneda(ingresos.dia);
+        document.getElementById("ingresosSemana").textContent = formatearMoneda(ingresos.semana);
+        document.getElementById("ingresosMes").textContent = formatearMoneda(ingresos.mes);
     } catch (error) {
         mostrarMensaje("mensajeDashboard", error.message || "No se pudo cargar el dashboard");
     }
 }
 
-function renderTablaClientes(clientes) {
-    const tabla = document.getElementById("tablaClientesDashboard");
+function calcularIngresos(pagos) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-    if (!clientes.length) {
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center text-muted py-4">No hay clientes registrados.</td>
-            </tr>
-        `;
-        return;
-    }
+    const inicioSemana = new Date(hoy);
+    const diaSemana = inicioSemana.getDay();
+    const ajuste = diaSemana === 0 ? 6 : diaSemana - 1;
+    inicioSemana.setDate(inicioSemana.getDate() - ajuste);
+    inicioSemana.setHours(0, 0, 0, 0);
 
-    tabla.innerHTML = clientes.map((cliente) => `
-        <tr>
-            <td>${cliente.idCliente}</td>
-            <td>${escapeHtml(cliente.dni)}</td>
-            <td>${escapeHtml(cliente.nombre)}</td>
-            <td>${escapeHtml(cliente.apellido)}</td>
-        </tr>
-    `).join("");
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+
+    return pagos.reduce((acc, pago) => {
+        if (!pago.fechaPago || !pago.monto) {
+            return acc;
+        }
+
+        const fechaPago = new Date(pago.fechaPago);
+        fechaPago.setHours(0, 0, 0, 0);
+        const monto = Number(pago.monto) || 0;
+
+        if (fechaPago.getTime() === hoy.getTime()) {
+            acc.dia += monto;
+        }
+
+        if (fechaPago >= inicioSemana && fechaPago <= hoy) {
+            acc.semana += monto;
+        }
+
+        if (fechaPago >= inicioMes && fechaPago <= hoy) {
+            acc.mes += monto;
+        }
+
+        return acc;
+    }, { dia: 0, semana: 0, mes: 0 });
 }
 
-function renderTablaReservas(reservas) {
-    const tabla = document.getElementById("tablaReporte");
-
-    if (!reservas.length) {
-        tabla.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center text-muted py-4">No hay reservas registradas.</td>
-            </tr>
-        `;
-        return;
-    }
-
-    tabla.innerHTML = reservas.map((reserva) => {
-        const cliente = reserva.cliente
-            ? `${escapeHtml(reserva.cliente.nombre)} ${escapeHtml(reserva.cliente.apellido)}`
-            : "Sin cliente";
-        const cancha = reserva.cancha ? escapeHtml(reserva.cancha.nombreCancha) : "Sin cancha";
-        const horario = `${escapeHtml(reserva.horaInicio || "")} - ${escapeHtml(reserva.horaFin || "")}`;
-        const pago = reserva.pago?.monto
-            ? `S/ ${escapeHtml(reserva.pago.monto)}`
-            : (reserva.adelanto ? `S/ ${escapeHtml(reserva.adelanto)}` : "Sin pago");
-
-        return `
-            <tr>
-                <td>${reserva.idReserva}</td>
-                <td>${cliente}</td>
-                <td>${cancha}</td>
-                <td>${escapeHtml(reserva.fecha || "")}</td>
-                <td>${horario}</td>
-                <td>${pago}</td>
-            </tr>
-        `;
-    }).join("");
+function formatearMoneda(valor) {
+    return `S/ ${Number(valor || 0).toFixed(2)}`;
 }

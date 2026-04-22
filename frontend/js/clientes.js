@@ -1,4 +1,6 @@
 let canchasCache = [];
+let horariosLibresActuales = [];
+let horaInicioSeleccionada = "";
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (!requireLogin()) {
@@ -8,10 +10,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("nombreAdmin").textContent = obtenerNombreAdmin();
     document.getElementById("formClienteReserva").addEventListener("submit", guardarClienteYReserva);
     document.getElementById("btnGuardarSoloCliente").addEventListener("click", guardarSoloCliente);
-    document.getElementById("canchaId").addEventListener("change", consultarDisponibilidad);
-    document.getElementById("fecha").addEventListener("change", consultarDisponibilidad);
-    document.getElementById("horaInicio").addEventListener("change", consultarDisponibilidad);
-    document.getElementById("horaFin").addEventListener("change", consultarDisponibilidad);
+    document.getElementById("canchaId").addEventListener("change", manejarCambioBase);
+    document.getElementById("fecha").addEventListener("change", manejarCambioBase);
+    document.getElementById("horaFin").addEventListener("change", actualizarEstadoHorario);
 
     document.getElementById("fecha").value = obtenerFechaLocal();
     document.getElementById("horariosDisponibles").innerHTML = '<span class="text-muted">Seleccione una cancha y una fecha.</span>';
@@ -172,61 +173,117 @@ async function guardarClienteYReserva(event) {
     }
 }
 
+async function manejarCambioBase() {
+    restablecerSeleccionHorario();
+    await consultarDisponibilidad();
+}
+
 async function consultarDisponibilidad() {
     const canchaId = document.getElementById("canchaId").value;
     const fecha = document.getElementById("fecha").value;
-    const horaInicio = document.getElementById("horaInicio").value;
-    const horaFin = document.getElementById("horaFin").value;
     const contenedor = document.getElementById("horariosDisponibles");
     const estado = document.getElementById("estadoDisponibilidad");
 
     if (!canchaId || !fecha) {
+        horariosLibresActuales = [];
         contenedor.innerHTML = '<span class="text-muted">Seleccione una cancha y una fecha.</span>';
         estado.textContent = "";
         return;
     }
 
     try {
-        const params = new URLSearchParams({ canchaId, fecha });
-        if (horaInicio) {
-            params.append("horaInicio", horaInicio);
-        }
-        if (horaFin) {
-            params.append("horaFin", horaFin);
-        }
+        const data = await apiFetch(`/reservas/disponibilidad?${new URLSearchParams({ canchaId, fecha }).toString()}`);
+        horariosLibresActuales = data.horariosLibres || [];
 
-        const data = await apiFetch(`/reservas/disponibilidad?${params.toString()}`);
-        const libres = data.horariosLibres || [];
-
-        if (!libres.length) {
+        if (!horariosLibresActuales.length) {
             contenedor.innerHTML = '<span class="badge text-bg-secondary">Sin horarios libres</span>';
-        } else {
-            contenedor.innerHTML = libres
-                .map((hora) => `<button type="button" class="slot-badge" data-slot="${hora}">${escapeHtml(hora)}</button>`)
-                .join("");
-
-            contenedor.querySelectorAll("[data-slot]").forEach((button) => {
-                button.addEventListener("click", async () => {
-                    const inicio = button.dataset.slot;
-                    document.getElementById("horaInicio").value = inicio;
-                    document.getElementById("horaFin").value = sumarTreintaMinutos(inicio);
-                    await consultarDisponibilidad();
-                });
-            });
+            estado.textContent = "No hay horarios libres para esa fecha.";
+            estado.className = "text-danger fw-semibold";
+            return;
         }
 
-        if (horaInicio && horaFin) {
-            estado.textContent = data.disponible
-                ? "El horario seleccionado esta disponible."
-                : "El horario seleccionado ya esta ocupado.";
-            estado.className = data.disponible ? "text-success fw-semibold" : "text-danger fw-semibold";
-        } else {
-            estado.textContent = `Se muestran ${libres.length} horarios libres.`;
-            estado.className = "helper-text";
-        }
+        contenedor.innerHTML = horariosLibresActuales
+            .map((hora) => `<button type="button" class="slot-badge" data-slot="${hora}">${escapeHtml(hora)}</button>`)
+            .join("");
+
+        contenedor.querySelectorAll("[data-slot]").forEach((button) => {
+            button.addEventListener("click", () => seleccionarHoraInicio(button.dataset.slot));
+        });
+
+        estado.textContent = "Seleccione el horario de inicio desde los espacios libres.";
+        estado.className = "helper-text";
     } catch (error) {
+        horariosLibresActuales = [];
         contenedor.innerHTML = '<span class="text-danger">No se pudo consultar disponibilidad.</span>';
         estado.textContent = "";
+    }
+}
+
+function seleccionarHoraInicio(hora) {
+    horaInicioSeleccionada = hora;
+    document.getElementById("horaInicio").value = hora;
+    document.getElementById("horaInicioSeleccionada").textContent = hora;
+
+    document.querySelectorAll("[data-slot]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.slot === hora);
+    });
+
+    llenarOpcionesHoraFin(hora);
+    actualizarEstadoHorario();
+}
+
+function llenarOpcionesHoraFin(horaInicio) {
+    const select = document.getElementById("horaFin");
+    const opciones = construirOpcionesFin(horaInicio);
+
+    if (!opciones.length) {
+        select.innerHTML = '<option value="">Sin horarios finales disponibles</option>';
+        return;
+    }
+
+    select.innerHTML = ['<option value="">Seleccione el horario final</option>']
+        .concat(opciones.map((hora) => `<option value="${hora}">${hora}</option>`))
+        .join("");
+
+    if (opciones.length === 1) {
+        select.value = opciones[0];
+    }
+}
+
+function construirOpcionesFin(horaInicio) {
+    const opciones = [];
+    const libres = new Set(horariosLibresActuales);
+    let cursor = horaInicio;
+
+    while (libres.has(cursor)) {
+        cursor = sumarTreintaMinutos(cursor);
+        opciones.push(cursor);
+    }
+
+    return opciones;
+}
+
+async function actualizarEstadoHorario() {
+    const canchaId = document.getElementById("canchaId").value;
+    const fecha = document.getElementById("fecha").value;
+    const horaInicio = document.getElementById("horaInicio").value;
+    const horaFin = document.getElementById("horaFin").value;
+    const estado = document.getElementById("estadoDisponibilidad");
+
+    if (!canchaId || !fecha || !horaInicio || !horaFin) {
+        return;
+    }
+
+    try {
+        const params = new URLSearchParams({ canchaId, fecha, horaInicio, horaFin });
+        const data = await apiFetch(`/reservas/disponibilidad?${params.toString()}`);
+        estado.textContent = data.disponible
+            ? "Horario listo para registrar."
+            : "Ese rango horario ya no esta disponible.";
+        estado.className = data.disponible ? "text-success fw-semibold" : "text-danger fw-semibold";
+    } catch (error) {
+        estado.textContent = "No se pudo validar el horario.";
+        estado.className = "text-danger fw-semibold";
     }
 }
 
@@ -252,12 +309,6 @@ async function buscarClientePorDni(dni) {
     try {
         return await apiFetch(`/clientes/dni/${dni}`);
     } catch (error) {
-        if (error.message && error.message.includes("404")) {
-            return null;
-        }
-        if (error.message && error.message.toLowerCase().includes("not found")) {
-            return null;
-        }
         return null;
     }
 }
@@ -269,13 +320,20 @@ function limpiarFormulario(soloCliente) {
 
     if (!soloCliente) {
         document.getElementById("canchaId").value = "";
-        document.getElementById("horaInicio").value = "";
-        document.getElementById("horaFin").value = "";
         document.getElementById("monto").value = "";
         document.getElementById("fecha").value = obtenerFechaLocal();
         document.getElementById("horariosDisponibles").innerHTML = '<span class="text-muted">Seleccione una cancha y una fecha.</span>';
-        document.getElementById("estadoDisponibilidad").textContent = "";
+        restablecerSeleccionHorario();
     }
+}
+
+function restablecerSeleccionHorario() {
+    horaInicioSeleccionada = "";
+    document.getElementById("horaInicio").value = "";
+    document.getElementById("horaInicioSeleccionada").textContent = "Seleccione un horario disponible";
+    document.getElementById("horaFin").innerHTML = '<option value="">Seleccione el horario final</option>';
+    document.getElementById("estadoDisponibilidad").textContent = "";
+    document.getElementById("estadoDisponibilidad").className = "helper-text";
 }
 
 function renderCliente(reserva) {
