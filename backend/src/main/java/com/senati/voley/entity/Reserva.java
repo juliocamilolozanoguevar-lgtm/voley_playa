@@ -1,6 +1,16 @@
 package com.senati.voley.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -33,11 +43,8 @@ public class Reserva {
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     private Pago pago;
 
-    @Column(name = "estado", length = 20)
-    private String estado;
-
-    // Constructores
-    public Reserva() {}
+    public Reserva() {
+    }
 
     public Reserva(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, Cliente cliente, Cancha cancha) {
         this.fecha = fecha;
@@ -47,28 +54,59 @@ public class Reserva {
         this.cancha = cancha;
     }
 
-    // Getters y Setters
-    public Integer getIdReserva() { return idReserva; }
-    public void setIdReserva(Integer idReserva) { this.idReserva = idReserva; }
+    public Integer getIdReserva() {
+        return idReserva;
+    }
 
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    public void setIdReserva(Integer idReserva) {
+        this.idReserva = idReserva;
+    }
 
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
+    public LocalDate getFecha() {
+        return fecha;
+    }
 
-    public LocalTime getHoraFin() { return horaFin; }
-    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
 
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
 
-    public Cancha getCancha() { return cancha; }
-    public void setCancha(Cancha cancha) { this.cancha = cancha; }
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
 
-    public Pago getPago() { return pago; }
-    public void setPago(Pago pago) { this.pago = pago; }
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Cancha getCancha() {
+        return cancha;
+    }
+
+    public void setCancha(Cancha cancha) {
+        this.cancha = cancha;
+    }
+
+    public Pago getPago() {
+        return pago;
+    }
+
+    public void setPago(Pago pago) {
+        this.pago = pago;
+    }
 }

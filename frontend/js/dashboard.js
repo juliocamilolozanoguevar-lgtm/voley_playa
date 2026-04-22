@@ -1,62 +1,63 @@
-// js/dashboard.js
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!requireLogin()) {
+        return;
+    }
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    const admin = localStorage.getItem("admin");
-    document.getElementById("adminNombre").innerText = admin ? "Admin: " + admin : "Admin";
-
-    cargarDashboard();
+    document.getElementById("nombreAdmin").textContent = obtenerNombreAdmin();
+    await cargarDashboard();
 });
 
-async function cargarDashboard(){
+async function cargarDashboard() {
+    mostrarMensaje("mensajeDashboard", "");
 
     try {
+        const [clientes, reservas, canchas, pagos] = await Promise.all([
+            apiFetch("/clientes"),
+            apiFetch("/reservas"),
+            apiFetch("/canchas"),
+            apiFetch("/pagos")
+        ]);
 
-        // CLIENTES
-        const resClientes = await fetch(API_URL + "/clientes");
-        const clientes = await resClientes.json();
-        document.getElementById("totalClientes").innerText = clientes.length;
+        document.getElementById("totalClientes").textContent = clientes.length;
+        document.getElementById("totalReservas").textContent = reservas.length;
+        document.getElementById("totalCanchas").textContent = canchas.length;
+        document.getElementById("totalPagos").textContent = pagos.length;
 
-        // RESERVAS
-        const resReservas = await fetch(API_URL + "/reservas");
-        const reservas = await resReservas.json();
-        document.getElementById("totalReservas").innerText = reservas.length;
-
-        // CANCHAS
-        const resCanchas = await fetch(API_URL + "/canchas");
-        const canchas = await resCanchas.json();
-        document.getElementById("totalCanchas").innerText = canchas.length;
-
-        // PAGOS
-        const resPagos = await fetch(API_URL + "/pagos");
-        const pagos = await resPagos.json();
-        document.getElementById("totalPagos").innerText = pagos.length;
-
-        // REPORTE RESERVAS
-        const tabla = document.getElementById("tablaReporte");
-        tabla.innerHTML = "";
-
-        reservas.forEach(r => {
-
-            const fila = `
-                <tr>
-                    <td>${r.idReserva}</td>
-                    <td>${r.cliente ? r.cliente.nombre : "N/A"}</td>
-                    <td>${r.cancha ? r.cancha.nombreCancha : "N/A"}</td>
-                    <td>${r.fecha}</td>
-                    <td>${r.estado || "SIN ESTADO"}</td>
-                </tr>
-            `;
-
-            tabla.innerHTML += fila;
-        });
-
-    } catch(error){
-        console.log("Error cargando dashboard:", error);
+        renderTablaReservas(reservas);
+    } catch (error) {
+        mostrarMensaje("mensajeDashboard", error.message || "No se pudo cargar el dashboard");
     }
 }
 
-function cerrarSesion(){
-    localStorage.removeItem("admin");
-    window.location.href = "login.html";
+function renderTablaReservas(reservas) {
+    const tabla = document.getElementById("tablaReporte");
+
+    if (!reservas.length) {
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">No hay reservas registradas.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    tabla.innerHTML = reservas.map((reserva) => {
+        const cliente = reserva.cliente
+            ? `${escapeHtml(reserva.cliente.nombre)} ${escapeHtml(reserva.cliente.apellido)}`
+            : "Sin cliente";
+        const cancha = reserva.cancha ? escapeHtml(reserva.cancha.nombreCancha) : "Sin cancha";
+        const horario = `${escapeHtml(reserva.horaInicio || "")} - ${escapeHtml(reserva.horaFin || "")}`;
+        const pago = reserva.pago?.monto ? `S/ ${escapeHtml(reserva.pago.monto)}` : "Sin pago";
+
+        return `
+            <tr>
+                <td>${reserva.idReserva}</td>
+                <td>${cliente}</td>
+                <td>${cancha}</td>
+                <td>${escapeHtml(reserva.fecha || "")}</td>
+                <td>${horario}</td>
+                <td>${pago}</td>
+            </tr>
+        `;
+    }).join("");
 }

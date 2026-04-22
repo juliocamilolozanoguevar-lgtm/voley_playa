@@ -1,8 +1,11 @@
 package com.senati.voley.entity;
 
-import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cancha")
@@ -19,27 +22,35 @@ public class Cancha {
     @Column(name = "descripcion", length = 200)
     private String descripcion;
 
-    @OneToMany(mappedBy = "cancha")
-    private List<Reserva> reservas = new ArrayList<>();
-
-    // Constructores
-    public Cancha() {}
+    public Cancha() {
+    }
 
     public Cancha(String nombreCancha, String descripcion) {
         this.nombreCancha = nombreCancha;
         this.descripcion = descripcion;
     }
 
-    // Getters y Setters
-    public Integer getIdCancha() { return idCancha; }
-    public void setIdCancha(Integer idCancha) { this.idCancha = idCancha; }
+    public Integer getIdCancha() {
+        return idCancha;
+    }
 
-    public String getNombreCancha() { return nombreCancha; }
-    public void setNombreCancha(String nombreCancha) { this.nombreCancha = nombreCancha; }
+    public void setIdCancha(Integer idCancha) {
+        this.idCancha = idCancha;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getNombreCancha() {
+        return nombreCancha;
+    }
 
-    public List<Reserva> getReservas() { return reservas; }
-    public void setReservas(List<Reserva> reservas) { this.reservas = reservas; }
+    public void setNombreCancha(String nombreCancha) {
+        this.nombreCancha = nombreCancha;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }

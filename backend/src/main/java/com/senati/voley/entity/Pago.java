@@ -1,6 +1,16 @@
 package com.senati.voley.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -16,12 +26,10 @@ public class Pago {
     @Column(name = "monto", nullable = false, precision = 10, scale = 2)
     private BigDecimal monto;
 
-    @Column(name = "metodo_pago", length = 50)
-    private String metodoPago;
-
     @Column(name = "fecha_pago")
     private LocalDateTime fechaPago;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "id_reserva")
     private Reserva reserva;
@@ -33,27 +41,43 @@ public class Pago {
         }
     }
 
-    // Constructores
-    public Pago() {}
+    public Pago() {
+    }
 
     public Pago(BigDecimal monto, Reserva reserva) {
         this.monto = monto;
         this.reserva = reserva;
     }
 
-    // Getters y Setters
-    public Integer getIdPago() { return idPago; }
-    public void setIdPago(Integer idPago) { this.idPago = idPago; }
+    public Integer getIdPago() {
+        return idPago;
+    }
 
-    public BigDecimal getMonto() { return monto; }
-    public void setMonto(BigDecimal monto) { this.monto = monto; }
+    public void setIdPago(Integer idPago) {
+        this.idPago = idPago;
+    }
 
-    public String getMetodoPago() { return metodoPago; }
-    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+    public BigDecimal getMonto() {
+        return monto;
+    }
 
-    public LocalDateTime getFechaPago() { return fechaPago; }
-    public void setFechaPago(LocalDateTime fechaPago) { this.fechaPago = fechaPago; }
+    public void setMonto(BigDecimal monto) {
+        this.monto = monto;
+    }
 
-    public Reserva getReserva() { return reserva; }
-    public void setReserva(Reserva reserva) { this.reserva = reserva; }
+    public LocalDateTime getFechaPago() {
+        return fechaPago;
+    }
+
+    public void setFechaPago(LocalDateTime fechaPago) {
+        this.fechaPago = fechaPago;
+    }
+
+    public Reserva getReserva() {
+        return reserva;
+    }
+
+    public void setReserva(Reserva reserva) {
+        this.reserva = reserva;
+    }
 }

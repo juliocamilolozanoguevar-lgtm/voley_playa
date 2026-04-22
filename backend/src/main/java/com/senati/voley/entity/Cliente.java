@@ -1,8 +1,11 @@
 package com.senati.voley.entity;
 
-import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cliente")
@@ -22,14 +25,8 @@ public class Cliente {
     @Column(name = "apellido", nullable = false, length = 100)
     private String apellido;
 
-    @Column(name = "celular", length = 20)
-    private String celular;
-
-    @OneToMany(mappedBy = "cliente")
-    private List<Reserva> reservas = new ArrayList<>();
-
-    // Constructores
-    public Cliente() {}
+    public Cliente() {
+    }
 
     public Cliente(String dni, String nombre, String apellido) {
         this.dni = dni;
@@ -37,24 +34,37 @@ public class Cliente {
         this.apellido = apellido;
     }
 
-    // Getters y Setters
-    public Integer getIdCliente() { return idCliente; }
-    public void setIdCliente(Integer idCliente) { this.idCliente = idCliente; }
+    public Integer getIdCliente() {
+        return idCliente;
+    }
 
-    public String getDni() { return dni; }
-    public void setDni(String dni) { this.dni = dni; }
+    public void setIdCliente(Integer idCliente) {
+        this.idCliente = idCliente;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getDni() {
+        return dni;
+    }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
 
-    public String getCelular() { return celular; }
-    public void setCelular(String celular) { this.celular = celular; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public List<Reserva> getReservas() { return reservas; }
-    public void setReservas(List<Reserva> reservas) { this.reservas = reservas; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
 
     public String getNombreCompleto() {
         return nombre + " " + apellido;

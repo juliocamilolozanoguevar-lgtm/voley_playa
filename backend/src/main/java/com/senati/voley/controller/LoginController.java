@@ -6,7 +6,11 @@ import com.senati.voley.repository.UsuarioRepository;
 import com.senati.voley.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,12 +36,11 @@ public class LoginController {
         if (request.getUsername() == null || request.getUsername().isBlank()
                 || request.getPassword() == null || request.getPassword().isBlank()) {
             response.put("status", "error");
-            response.put("message", "Complete usuario y contraseña");
+            response.put("message", "Complete usuario y contrasena");
             return ResponseEntity.badRequest().body(response);
         }
 
         Optional<Usuario> usuarioDb = usuarioRepository.findByUsername(request.getUsername().trim());
-
         if (usuarioDb.isEmpty()) {
             response.put("status", "error");
             response.put("message", "Usuario no existe");
@@ -45,23 +48,31 @@ public class LoginController {
         }
 
         Usuario usuario = usuarioDb.get();
-
-        // Comparar contraseña con BCryptPasswordEncoder
-        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+        if (!passwordMatches(request.getPassword(), usuario.getPassword())) {
             response.put("status", "error");
-            response.put("message", "Contraseña incorrecta");
+            response.put("message", "Contrasena incorrecta");
             return ResponseEntity.status(401).body(response);
         }
 
-        // Generar JWT real
-        String token = jwtUtil.generateToken(usuario.getUsername());
-
         response.put("status", "ok");
         response.put("message", "Login exitoso");
-        response.put("token", token);
+        response.put("token", jwtUtil.generateToken(usuario.getUsername()));
         response.put("nombre", usuario.getNombreAdmin() != null ? usuario.getNombreAdmin() : "Administrador");
         response.put("username", usuario.getUsername());
 
         return ResponseEntity.ok(response);
+    }
+
+    private boolean passwordMatches(String rawPassword, String storedPassword) {
+        if (storedPassword == null) {
+            return false;
+        }
+
+        if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$")
+                || storedPassword.startsWith("$2y$")) {
+            return passwordEncoder.matches(rawPassword, storedPassword);
+        }
+
+        return rawPassword.equals(storedPassword);
     }
 }

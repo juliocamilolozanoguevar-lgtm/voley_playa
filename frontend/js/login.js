@@ -1,23 +1,38 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  const path = window.location.pathname.split('/').pop();
-  const isLoginPage = path === 'login.html' || path === '';
-
-  if (isLoginPage) {
-    if (window.VoleyApi.isAuthenticated()) {
-      window.location.href = 'dashboard.html';
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("authUser")) {
+        window.location.href = obtenerDestinoDashboard();
+        return;
     }
-    return;
-  }
 
-  if (!window.VoleyApi.isAuthenticated()) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  try {
-    await window.VoleyApi.fetchJson('/health');
-  } catch (error) {
-    console.error('Auth check failed:', error);
-    window.VoleyApi.logout();
-  }
+    const form = document.getElementById("formLogin");
+    form.addEventListener("submit", iniciarSesion);
 });
+
+async function iniciarSesion(event) {
+    event.preventDefault();
+    mostrarMensaje("mensaje", "");
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        mostrarMensaje("mensaje", "Complete usuario y contrasena");
+        return;
+    }
+
+    try {
+        const data = await apiFetch("/login", {
+            method: "POST",
+            body: JSON.stringify({ username, password })
+        });
+
+        guardarSesion(data);
+        mostrarMensaje("mensaje", "Acceso correcto", "success");
+
+        window.setTimeout(() => {
+            window.location.href = obtenerDestinoDashboard();
+        }, 350);
+    } catch (error) {
+        mostrarMensaje("mensaje", error.message || "No se pudo iniciar sesion");
+    }
+}

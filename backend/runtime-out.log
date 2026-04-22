@@ -7,26 +7,87 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-04-19T00:51:56.153-05:00  INFO 5992 --- [voley] [           main] com.senati.voley.VoleyApplication        : Starting VoleyApplication v0.0.1-SNAPSHOT using Java 25.0.1 with PID 5992 (C:\xampp\htdocs\voley_playa\backend\target\voley-0.0.1-SNAPSHOT.jar started by JULIO in C:\xampp\htdocs\voley_playa\backend)
-2026-04-19T00:51:56.158-05:00  INFO 5992 --- [voley] [           main] com.senati.voley.VoleyApplication        : No active profile set, falling back to 1 default profile: "default"
-2026-04-19T00:51:56.761-05:00  INFO 5992 --- [voley] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-04-19T00:51:56.815-05:00  INFO 5992 --- [voley] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 43 ms. Found 5 JPA repository interfaces.
-2026-04-19T00:51:57.349-05:00  INFO 5992 --- [voley] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-04-19T00:51:57.368-05:00  INFO 5992 --- [voley] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-04-19T00:51:57.370-05:00  INFO 5992 --- [voley] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
-2026-04-19T00:51:57.407-05:00  INFO 5992 --- [voley] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-04-19T00:51:57.410-05:00  INFO 5992 --- [voley] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1190 ms
-2026-04-19T00:51:57.621-05:00  INFO 5992 --- [voley] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-04-19T00:51:57.674-05:00  INFO 5992 --- [voley] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
-2026-04-19T00:51:57.710-05:00  INFO 5992 --- [voley] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-04-19T00:51:57.904-05:00  INFO 5992 --- [voley] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-04-19T00:51:57.928-05:00  INFO 5992 --- [voley] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-04-19T00:51:58.098-05:00  INFO 5992 --- [voley] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e92c3b6
-2026-04-19T00:51:58.101-05:00  INFO 5992 --- [voley] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-04-19T00:51:58.145-05:00  WARN 5992 --- [voley] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.0 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
-2026-04-19T00:51:58.151-05:00  WARN 5992 --- [voley] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-04-19T00:51:58.790-05:00  INFO 5992 --- [voley] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-04-19T00:51:58.864-05:00  INFO 5992 --- [voley] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-04-19T00:51:59.218-05:00  WARN 5992 --- [voley] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-04-19T00:51:59.587-05:00  INFO 5992 --- [voley] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
-2026-04-19T00:51:59.606-05:00  INFO 5992 --- [voley] [           main] com.senati.voley.VoleyApplication        : Started VoleyApplication in 3.846 seconds (process running for 4.285)
+2026-04-22T13:54:48.944-05:00  INFO 19864 --- [           main] com.senati.voley.VoleyApplication        : Starting VoleyApplication v0.0.1-SNAPSHOT using Java 25.0.1 with PID 19864 (C:\xampp\htdocs\voley_playa\backend\target\voley-0.0.1-SNAPSHOT.jar started by JULIO in C:\xampp\htdocs\voley_playa\backend)
+2026-04-22T13:54:48.947-05:00 DEBUG 19864 --- [           main] com.senati.voley.VoleyApplication        : Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-04-22T13:54:48.948-05:00  INFO 19864 --- [           main] com.senati.voley.VoleyApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-04-22T13:54:49.961-05:00  INFO 19864 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-22T13:54:50.035-05:00  INFO 19864 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 63 ms. Found 5 JPA repository interfaces.
+2026-04-22T13:54:50.766-05:00  INFO 19864 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-22T13:54:50.784-05:00  INFO 19864 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-22T13:54:50.784-05:00  INFO 19864 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-22T13:54:50.836-05:00  INFO 19864 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring embedded WebApplicationContext
+2026-04-22T13:54:50.837-05:00  INFO 19864 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1783 ms
+2026-04-22T13:54:51.060-05:00  INFO 19864 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-22T13:54:51.123-05:00  INFO 19864 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-22T13:54:51.170-05:00  INFO 19864 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-22T13:54:51.452-05:00  INFO 19864 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-22T13:54:51.491-05:00  INFO 19864 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-22T13:54:51.746-05:00  INFO 19864 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@541d4d9f
+2026-04-22T13:54:51.749-05:00  INFO 19864 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-22T13:54:51.775-05:00  WARN 19864 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-22T13:54:51.777-05:00  WARN 19864 --- [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-04-22T13:54:52.668-05:00  INFO 19864 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-22T13:54:52.878-05:00  INFO 19864 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-22T13:54:53.237-05:00  INFO 19864 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-22T13:54:53.912-05:00  WARN 19864 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-22T13:54:53.936-05:00  WARN 19864 --- [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: ff7788b6-b05a-4905-98d4-711911a444d9
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-22T13:54:54.278-05:00  INFO 19864 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@134a27c1, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6015326, org.springframework.security.web.context.SecurityContextHolderFilter@247c43c6, org.springframework.security.web.header.HeaderWriterFilter@492bbebe, org.springframework.web.filter.CorsFilter@6d36529a, org.springframework.security.web.authentication.logout.LogoutFilter@63ff69e0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1ee2b6c3, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@17abb298, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2653b95f, org.springframework.security.web.session.SessionManagementFilter@1500c6e7, org.springframework.security.web.access.ExceptionTranslationFilter@41019f9d, org.springframework.security.web.access.intercept.AuthorizationFilter@6d9f0836]
+2026-04-22T13:54:54.548-05:00  INFO 19864 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/api'
+2026-04-22T13:54:54.580-05:00  INFO 19864 --- [           main] com.senati.voley.VoleyApplication        : Started VoleyApplication in 6.141 seconds (process running for 6.742)
+========================================
+ VOLEY PLAYA DILOZ - BACKEND INICIADO
+========================================
+ API disponible: http://localhost:8080/api
+ Health check: http://localhost:8080/api/health
+========================================
+2026-04-22T13:54:54.656-05:00  INFO 19864 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-22T13:54:54.657-05:00  INFO 19864 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-22T13:54:54.659-05:00  INFO 19864 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+Hibernate: 
+    select
+        u1_0.id_usuario,
+        u1_0.nombre_admin,
+        u1_0.password,
+        u1_0.username 
+    from
+        usuario u1_0 
+    where
+        u1_0.username=?
+Hibernate: 
+    select
+        c1_0.id_cliente,
+        c1_0.apellido,
+        c1_0.dni,
+        c1_0.nombre 
+    from
+        cliente c1_0
+Hibernate: 
+    select
+        c1_0.id_cancha,
+        c1_0.descripcion,
+        c1_0.nombre_cancha 
+    from
+        cancha c1_0
+Hibernate: 
+    select
+        r1_0.id_reserva,
+        r1_0.id_cancha,
+        r1_0.id_cliente,
+        r1_0.fecha,
+        r1_0.hora_fin,
+        r1_0.hora_inicio 
+    from
+        reserva r1_0
+Hibernate: 
+    select
+        p1_0.id_pago,
+        p1_0.fecha_pago,
+        p1_0.monto,
+        p1_0.id_reserva 
+    from
+        pago p1_0
