@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "reserva")
@@ -39,6 +40,15 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "id_cancha", nullable = false)
     private Cancha cancha;
+
+    @Column(name = "estado_reserva", nullable = false, length = 30)
+    private String estadoReserva;
+
+    @Column(name = "adelanto", precision = 10, scale = 2)
+    private BigDecimal adelanto;
+
+    @Column(name = "estado", length = 20)
+    private String estado;
 
     @OneToOne(mappedBy = "reserva", cascade = CascadeType.ALL)
     private Pago pago;
@@ -108,5 +118,29 @@ public class Reserva {
 
     public void setPago(Pago pago) {
         this.pago = pago;
+    }
+
+    public String getEstadoReserva() {
+        return estadoReserva;
+    }
+
+    public void setEstadoReserva(String estadoReserva) {
+        this.estadoReserva = estadoReserva;
+    }
+
+    public BigDecimal getAdelanto() {
+        return adelanto;
+    }
+
+    public void setAdelanto(BigDecimal adelanto) {
+        this.adelanto = adelanto;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

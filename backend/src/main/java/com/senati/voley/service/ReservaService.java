@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +24,9 @@ import java.util.Set;
 
 @Service
 public class ReservaService {
+    private static final LocalTime HORA_APERTURA = LocalTime.of(8, 0);
+    private static final LocalTime HORA_CIERRE = LocalTime.of(22, 0);
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private final ReservaRepository reservaRepository;
     private final ClienteRepository clienteRepository;
@@ -60,23 +63,26 @@ public class ReservaService {
         Set<String> ocupados = new LinkedHashSet<>();
         for (Reserva reserva : reservas) {
             LocalTime cursor = reserva.getHoraInicio();
-            while (!cursor.isAfter(reserva.getHoraFin().minusHours(1))) {
-                ocupados.add(cursor.toString());
-                cursor = cursor.plusHours(1);
+            while (cursor.isBefore(reserva.getHoraFin())) {
+                ocupados.add(cursor.format(TIME_FORMAT));
+                cursor = cursor.plusMinutes(30);
             }
         }
 
         List<String> horariosLibres = new ArrayList<>();
-        for (int hora = 8; hora < 22; hora++) {
-            String slot = String.format("%02d:00", hora);
-            if (!ocupados.contains(slot)) {
-                horariosLibres.add(slot);
+        LocalTime slot = HORA_APERTURA;
+        while (slot.isBefore(HORA_CIERRE)) {
+            String slotValue = slot.format(TIME_FORMAT);
+            if (!ocupados.contains(slotValue)) {
+                horariosLibres.add(slotValue);
             }
+            slot = slot.plusMinutes(30);
         }
 
         dto.setHorariosOcupados(new ArrayList<>(ocupados));
         dto.setHorariosLibres(horariosLibres);
-        dto.setDisponible(reservaRepository.findConflictos(canchaId, fecha, horaInicio, horaFin).isEmpty());
+        dto.setDisponible(horaInicio == null || horaFin == null
+                || reservaRepository.findConflictos(canchaId, fecha, horaInicio, horaFin).isEmpty());
         return dto;
     }
 
@@ -96,6 +102,11 @@ public class ReservaService {
         reserva.setHoraFin(request.getHoraFin());
         reserva.setCliente(cliente);
         reserva.setCancha(cancha);
+        reserva.setEstadoReserva(normalizarEstadoReserva(request.getEstadoReserva()));
+        reserva.setEstado(normalizarEstado(request.getEstado()));
+        if (request.getMonto() != null && request.getMonto() > 0) {
+            reserva.setAdelanto(BigDecimal.valueOf(request.getMonto()));
+        }
 
         Reserva reservaGuardada = reservaRepository.save(reserva);
 
@@ -132,6 +143,11 @@ public class ReservaService {
         reserva.setHoraFin(request.getHoraFin());
         reserva.setCliente(cliente);
         reserva.setCancha(cancha);
+        reserva.setEstadoReserva(normalizarEstadoReserva(request.getEstadoReserva()));
+        reserva.setEstado(normalizarEstado(request.getEstado()));
+        reserva.setAdelanto(request.getMonto() != null && request.getMonto() > 0
+                ? BigDecimal.valueOf(request.getMonto())
+                : null);
 
         Reserva reservaGuardada = reservaRepository.save(reserva);
 
@@ -187,12 +203,7 @@ public class ReservaService {
             throw new RuntimeException("La hora de inicio debe ser menor a la hora de fin");
         }
 
-        long duracion = Duration.between(inicio, fin).toHours();
-        if (duracion < 1) {
-            throw new RuntimeException("La reserva debe durar al menos 1 hora");
-        }
-
-        if (inicio.isBefore(LocalTime.of(8, 0)) || fin.isAfter(LocalTime.of(22, 0))) {
+        if (inicio.isBefore(HORA_APERTURA) || fin.isAfter(HORA_CIERRE)) {
             throw new RuntimeException("El horario de reserva es de 08:00 a 22:00");
         }
     }
@@ -201,5 +212,19 @@ public class ReservaService {
         if (!reservaRepository.findConflictos(canchaId, fecha, horaInicio, horaFin).isEmpty()) {
             throw new RuntimeException("La cancha no esta disponible en ese horario");
         }
+    }
+
+    private String normalizarEstadoReserva(String estadoReserva) {
+        if (estadoReserva == null || estadoReserva.isBlank()) {
+            return "RESERVADA";
+        }
+        return estadoReserva.trim().toUpperCase();
+    }
+
+    private String normalizarEstado(String estado) {
+        if (estado == null || estado.isBlank()) {
+            return "ACTIVA";
+        }
+        return estado.trim().toUpperCase();
     }
 }

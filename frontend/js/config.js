@@ -47,10 +47,16 @@ async function apiFetch(path, options = {}) {
         headers.set("Content-Type", "application/json");
     }
 
-    const response = await fetch(`${API_URL}${path}`, {
-        ...options,
-        headers
-    });
+    let response;
+
+    try {
+        response = await fetch(`${API_URL}${path}`, {
+            ...options,
+            headers
+        });
+    } catch (error) {
+        throw new Error("No se pudo conectar con el backend. Verifique que IntelliJ este ejecutando el servidor en http://localhost:8080");
+    }
 
     const contentType = response.headers.get("content-type") || "";
     let payload = null;

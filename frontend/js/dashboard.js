@@ -23,10 +23,33 @@ async function cargarDashboard() {
         document.getElementById("totalCanchas").textContent = canchas.length;
         document.getElementById("totalPagos").textContent = pagos.length;
 
+        renderTablaClientes(clientes);
         renderTablaReservas(reservas);
     } catch (error) {
         mostrarMensaje("mensajeDashboard", error.message || "No se pudo cargar el dashboard");
     }
+}
+
+function renderTablaClientes(clientes) {
+    const tabla = document.getElementById("tablaClientesDashboard");
+
+    if (!clientes.length) {
+        tabla.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center text-muted py-4">No hay clientes registrados.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    tabla.innerHTML = clientes.map((cliente) => `
+        <tr>
+            <td>${cliente.idCliente}</td>
+            <td>${escapeHtml(cliente.dni)}</td>
+            <td>${escapeHtml(cliente.nombre)}</td>
+            <td>${escapeHtml(cliente.apellido)}</td>
+        </tr>
+    `).join("");
 }
 
 function renderTablaReservas(reservas) {
@@ -47,7 +70,9 @@ function renderTablaReservas(reservas) {
             : "Sin cliente";
         const cancha = reserva.cancha ? escapeHtml(reserva.cancha.nombreCancha) : "Sin cancha";
         const horario = `${escapeHtml(reserva.horaInicio || "")} - ${escapeHtml(reserva.horaFin || "")}`;
-        const pago = reserva.pago?.monto ? `S/ ${escapeHtml(reserva.pago.monto)}` : "Sin pago";
+        const pago = reserva.pago?.monto
+            ? `S/ ${escapeHtml(reserva.pago.monto)}`
+            : (reserva.adelanto ? `S/ ${escapeHtml(reserva.adelanto)}` : "Sin pago");
 
         return `
             <tr>

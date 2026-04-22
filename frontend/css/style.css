@@ -71,3 +71,30 @@ body.page-body {
     color: #6b7280;
     font-size: 0.92rem;
 }
+
+.availability-box {
+    background: #f8fbff;
+    border: 1px solid #d8e7ff;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.slot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.slot-badge {
+    border: 1px solid #9cc1ff;
+    background: #ffffff;
+    color: #0d4fd8;
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.slot-badge:hover {
+    background: #eaf2ff;
+}

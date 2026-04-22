@@ -18,9 +18,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
     @Query("SELECT r FROM Reserva r WHERE r.cancha.idCancha = :canchaId " +
             "AND r.fecha = :fecha " +
-            "AND ((r.horaInicio BETWEEN :horaInicio AND :horaFin) " +
-            "OR (r.horaFin BETWEEN :horaInicio AND :horaFin) " +
-            "OR (:horaInicio BETWEEN r.horaInicio AND r.horaFin))")
+            "AND r.horaInicio < :horaFin " +
+            "AND r.horaFin > :horaInicio")
     List<Reserva> findConflictos(@Param("canchaId") Integer canchaId,
                                  @Param("fecha") LocalDate fecha,
                                  @Param("horaInicio") LocalTime horaInicio,

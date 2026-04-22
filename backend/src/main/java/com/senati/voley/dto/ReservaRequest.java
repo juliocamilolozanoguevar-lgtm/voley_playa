@@ -7,7 +7,7 @@ import java.time.LocalTime;
 public class ReservaRequest {
     
     @NotNull(message = "La fecha es obligatoria")
-    @Future(message = "La fecha debe ser en el futuro")
+    @FutureOrPresent(message = "La fecha debe ser hoy o futura")
     private LocalDate fecha;
     
     @NotNull(message = "La hora de inicio es obligatoria")
@@ -35,6 +35,8 @@ public class ReservaRequest {
     private Double monto;
     
     private String estado;
+
+    private String estadoReserva;
     
     private String metodoPago;
 
@@ -65,6 +67,9 @@ public class ReservaRequest {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    public String getEstadoReserva() { return estadoReserva; }
+    public void setEstadoReserva(String estadoReserva) { this.estadoReserva = estadoReserva; }
 
     public String getMetodoPago() { return metodoPago; }
     public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
