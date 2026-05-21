@@ -37,7 +37,7 @@ async function apiFetch(path, options = {}) {
     }
 
     if (response.status === 401 && !skipAuthRedirect) {
-        window.location.href = buildUrl("/");
+        window.location.href = buildUrl("/login");
         throw new Error(payload?.message || "La sesion ha expirado");
     }
 

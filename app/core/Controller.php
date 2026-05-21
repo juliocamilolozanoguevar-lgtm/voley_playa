@@ -54,7 +54,7 @@ class Controller
             $this->json(['message' => 'La sesion ha expirado'], 401);
         }
 
-        redirect();
+        redirect('login');
         return false;
     }
 

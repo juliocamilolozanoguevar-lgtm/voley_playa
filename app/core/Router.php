@@ -4,7 +4,7 @@ declare(strict_types=1);
 class Router
 {
     private array $routes = [
-        ['GET', '#^/$#', 'AuthController', 'showLogin'],
+        ['GET', '#^/$#', 'HomeController', 'index'],
         ['GET', '#^/login$#', 'AuthController', 'showLogin'],
         ['GET', '#^/dashboard$#', 'DashboardController', 'index'],
         ['GET', '#^/clientes$#', 'ClienteController', 'index'],
