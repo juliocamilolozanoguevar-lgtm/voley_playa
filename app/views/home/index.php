@@ -19,33 +19,7 @@
             </div>
         </div>
 
-        <div class="landing-product" aria-label="Vista previa del sistema">
-            <div class="landing-product-bar">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="landing-product-grid">
-                <div class="landing-metric">
-                    <small>Clientes</small>
-                    <strong>128</strong>
-                </div>
-                <div class="landing-metric">
-                    <small>Reservas</small>
-                    <strong>42</strong>
-                </div>
-                <div class="landing-metric">
-                    <small>Pagos</small>
-                    <strong>S/ 860</strong>
-                </div>
-            </div>
-            <div class="landing-court">
-                <div class="landing-net"></div>
-                <div class="landing-slot is-free">08:00</div>
-                <div class="landing-slot is-active">10:30</div>
-                <div class="landing-slot is-free">16:00</div>
-            </div>
-        </div>
+        
     </section>
 
     <section class="landing-section" id="funciones">
