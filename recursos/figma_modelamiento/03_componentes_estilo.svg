@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <style>
+    .bg{fill:#f4f8fc}.panel{fill:#fff;stroke:#d9e6f2;stroke-width:2}.title{font:700 32px Arial;fill:#16304d}.h{font:700 20px Arial;fill:#16304d}.txt{font:14px Arial;fill:#16304d}.small{font:12px Arial;fill:#5f738c}.primary{fill:#1f6feb}.dark{fill:#1349b4}.sky{fill:#dff1ff}.bgc{fill:#f4f8fc}.textc{fill:#16304d}.muted{fill:#5f738c}.success{fill:#0f9d79}.danger{fill:#be123c}.input{fill:#fff;stroke:#d9e6f2;stroke-width:1.5}.outline{fill:#fff;stroke:#1f6feb;stroke-width:1.5}
+  </style>
+  <rect class="bg" width="1600" height="1000"/>
+  <text x="60" y="60" class="title">Guia UI / UX - Voley Diloz</text>
+  <text x="60" y="90" class="small">Colores, componentes y criterios para modelamiento en Figma.</text>
+
+  <rect class="panel" x="60" y="130" width="460" height="310" rx="12"/>
+  <text x="90" y="170" class="h">Paleta</text>
+  <rect class="primary" x="90" y="200" width="80" height="80" rx="8"/><text x="90" y="300" class="small">#1F6FEB</text><text x="90" y="320" class="small">Primario</text>
+  <rect class="dark" x="190" y="200" width="80" height="80" rx="8"/><text x="190" y="300" class="small">#1349B4</text><text x="190" y="320" class="small">Nav</text>
+  <rect class="sky" x="290" y="200" width="80" height="80" rx="8"/><text x="290" y="300" class="small">#DFF1FF</text><text x="290" y="320" class="small">Slots</text>
+  <rect class="bgc" x="390" y="200" width="80" height="80" rx="8" stroke="#d9e6f2"/><text x="390" y="300" class="small">#F4F8FC</text><text x="390" y="320" class="small">Fondo</text>
+  <rect class="textc" x="90" y="350" width="80" height="40" rx="8"/><text x="190" y="375" class="txt">Texto principal #16304D</text>
+  <rect class="success" x="90" y="400" width="80" height="20" rx="8"/><text x="190" y="416" class="txt">Exito #0F9D79</text>
+
+  <rect class="panel" x="570" y="130" width="460" height="310" rx="12"/>
+  <text x="600" y="170" class="h">Componentes base</text>
+  <rect class="primary" x="600" y="205" width="155" height="44" rx="10"/><text x="635" y="233" fill="#fff" font-family="Arial" font-size="14" font-weight="700">Guardar</text>
+  <rect class="outline" x="775" y="205" width="155" height="44" rx="10"/><text x="815" y="233" class="txt">Secundario</text>
+  <rect class="input" x="600" y="280" width="330" height="46" rx="10"/><text x="618" y="308" class="small">Campo de texto / select</text>
+  <rect class="sky" x="600" y="350" width="82" height="38" rx="19"/><text x="622" y="374" class="txt">10:00</text>
+  <rect class="primary" x="698" y="350" width="82" height="38" rx="19"/><text x="720" y="374" fill="#fff" font-family="Arial" font-size="14">10:30</text>
+  <rect class="panel" x="800" y="350" width="130" height="38" rx="19"/><text x="828" y="374" class="txt">Cancelar</text>
+
+  <rect class="panel" x="1080" y="130" width="460" height="310" rx="12"/>
+  <text x="1110" y="170" class="h">Estados de reserva</text>
+  <rect fill="#e9f7f2" x="1110" y="205" width="140" height="34" rx="17"/><text x="1135" y="227" class="txt">CONFIRMADA</text>
+  <rect fill="#fff5db" x="1110" y="260" width="140" height="34" rx="17"/><text x="1142" y="282" class="txt">RESERVADA</text>
+  <rect fill="#ffe3e3" x="1110" y="315" width="140" height="34" rx="17"/><text x="1140" y="337" class="txt">CANCELADA</text>
+  <text x="1110" y="390" class="small">UX: una cancelacion antes de la fecha libera el horario.</text>
+
+  <rect class="panel" x="60" y="500" width="700" height="360" rx="12"/>
+  <text x="90" y="540" class="h">Arquitectura de navegacion</text>
+  <text x="90" y="580" class="txt">Landing -> Login -> Dashboard -> Clientes -> Reservas</text>
+  <text x="90" y="620" class="txt">Clientes permite registrar cliente y crear reserva desde el mismo flujo.</text>
+  <text x="90" y="660" class="txt">Reservas permite buscar, editar, eliminar y cambiar estado.</text>
+  <text x="90" y="700" class="txt">Dashboard resume clientes, reservas, canchas, pagos e ingresos.</text>
+  <text x="90" y="760" class="small">Criterio UX: priorizar operacion rapida, tablas legibles y mensajes claros.</text>
+
+  <rect class="panel" x="820" y="500" width="720" height="360" rx="12"/>
+  <text x="850" y="540" class="h">Pantallas a crear en Figma</text>
+  <text x="850" y="585" class="txt">1. Landing publica</text>
+  <text x="850" y="620" class="txt">2. Login administrador</text>
+  <text x="850" y="655" class="txt">3. Dashboard</text>
+  <text x="850" y="690" class="txt">4. Clientes y reservas</text>
+  <text x="850" y="725" class="txt">5. Modal nueva reserva desde cliente</text>
+  <text x="850" y="760" class="txt">6. Reservas</text>
+  <text x="850" y="795" class="txt">7. Modal editar reserva con estado CANCELADA</text>
+</svg>

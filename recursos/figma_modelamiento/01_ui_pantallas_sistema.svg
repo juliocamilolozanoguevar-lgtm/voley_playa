@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1600" viewBox="0 0 2400 1600">
+  <defs>
+    <linearGradient id="nav" x1="0" x2="1"><stop stop-color="#1349b4"/><stop offset="1" stop-color="#1f6feb"/></linearGradient>
+    <linearGradient id="soft" y1="0" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#eef7ff"/></linearGradient>
+  </defs>
+  <style>
+    .canvas{fill:#eef4fb}.screen{fill:#f8fbff;stroke:#cbd9e8;stroke-width:2}.nav{fill:url(#nav)}.card{fill:#fff;stroke:#d9e6f2;stroke-width:1.5}.card2{fill:url(#soft);stroke:#d9e6f2;stroke-width:1.5}.primary{fill:#1f6feb}.outline{fill:#fff;stroke:#1f6feb;stroke-width:1.5}.input{fill:#fff;stroke:#d9e6f2;stroke-width:1.5}.muted{fill:#5f738c}.text{font:14px Arial;fill:#16304d}.small{font:12px Arial;fill:#5f738c}.h1{font:700 30px Arial;fill:#16304d}.h2{font:700 20px Arial;fill:#16304d}.white{font:700 14px Arial;fill:#fff}.blue{font:700 26px Arial;fill:#1349b4}.badge{fill:#e9f7f2}.danger{fill:#ffe3e3}.warn{fill:#fff5db}
+  </style>
+  <rect class="canvas" width="2400" height="1600"/>
+  <text x="60" y="60" class="h1">UI Modelamiento - Voley Playa Diloz</text>
+  <text x="60" y="88" class="small">Pantallas principales basadas en el sistema PHP/MySQL desarrollado.</text>
+
+  <g transform="translate(60,130)">
+    <text x="0" y="-18" class="h2">Dashboard</text>
+    <rect class="screen" width="680" height="420" rx="10"/>
+    <rect class="nav" width="680" height="58" rx="10"/>
+    <text x="24" y="36" class="white">Voley Diloz</text>
+    <text x="160" y="36" class="white">Dashboard</text><text x="250" y="36" class="white">Clientes</text><text x="330" y="36" class="white">Reservas</text>
+    <text x="24" y="105" class="h1">Dashboard</text>
+    <text x="24" y="128" class="small">Resumen general de clientes, reservas, canchas e ingresos.</text>
+    <g transform="translate(24,160)">
+      <rect class="card" width="145" height="82" rx="10"/><text x="16" y="28" class="small">Clientes</text><text x="16" y="62" class="blue">1</text>
+      <rect class="card" x="160" width="145" height="82" rx="10"/><text x="176" y="28" class="small">Reservas</text><text x="176" y="62" class="blue">1</text>
+      <rect class="card" x="320" width="145" height="82" rx="10"/><text x="336" y="28" class="small">Canchas</text><text x="336" y="62" class="blue">2</text>
+      <rect class="card" x="480" width="145" height="82" rx="10"/><text x="496" y="28" class="small">Pagos</text><text x="496" y="62" class="blue">1</text>
+    </g>
+    <rect class="card" x="24" y="275" width="632" height="118" rx="10"/>
+    <text x="44" y="307" class="h2">Ingresos</text>
+    <rect class="card2" x="44" y="325" width="185" height="50" rx="8"/><text x="58" y="346" class="small">Ingresos del dia</text><text x="58" y="368" class="text">S/ 0.00</text>
+    <rect class="card2" x="247" y="325" width="185" height="50" rx="8"/><text x="261" y="346" class="small">Ingresos semana</text><text x="261" y="368" class="text">S/ 0.00</text>
+    <rect class="card2" x="450" y="325" width="185" height="50" rx="8"/><text x="464" y="346" class="small">Ingresos mes</text><text x="464" y="368" class="text">S/ 0.00</text>
+  </g>
+
+  <g transform="translate(800,130)">
+    <text x="0" y="-18" class="h2">Clientes y reservas</text>
+    <rect class="screen" width="760" height="520" rx="10"/>
+    <rect class="nav" width="760" height="58" rx="10"/>
+    <text x="24" y="36" class="white">Voley Diloz</text><text x="180" y="36" class="white">Dashboard</text><text x="285" y="36" class="white">Clientes</text><text x="370" y="36" class="white">Reservas</text>
+    <text x="24" y="105" class="h1">Clientes y reservas</text>
+    <rect class="card" x="24" y="132" width="712" height="218" rx="10"/>
+    <text x="44" y="164" class="h2">Registro integral</text>
+    <rect class="input" x="44" y="185" width="205" height="40" rx="8"/><text x="58" y="210" class="small">DNI</text>
+    <rect class="input" x="276" y="185" width="205" height="40" rx="8"/><text x="290" y="210" class="small">Nombre</text>
+    <rect class="input" x="508" y="185" width="205" height="40" rx="8"/><text x="522" y="210" class="small">Apellido</text>
+    <rect class="input" x="44" y="240" width="205" height="40" rx="8"/><text x="58" y="265" class="small">Cancha</text>
+    <rect class="input" x="276" y="240" width="205" height="40" rx="8"/><text x="290" y="265" class="small">Fecha</text>
+    <rect class="input" x="508" y="240" width="205" height="40" rx="8"/><text x="522" y="265" class="small">Adelanto</text>
+    <rect class="primary" x="44" y="300" width="170" height="34" rx="8"/><text x="66" y="322" class="white">Guardar reserva</text>
+    <rect class="outline" x="228" y="300" width="148" height="34" rx="8"/><text x="253" y="322" class="text">Solo cliente</text>
+    <rect class="card" x="24" y="378" width="712" height="112" rx="10"/>
+    <text x="44" y="410" class="h2">Clientes registrados</text>
+    <line x1="44" y1="438" x2="716" y2="438" stroke="#d9e6f2"/><line x1="44" y1="468" x2="716" y2="468" stroke="#d9e6f2"/>
+    <text x="52" y="458" class="small">ID</text><text x="112" y="458" class="small">DNI</text><text x="235" y="458" class="small">Nombre</text><text x="390" y="458" class="small">Apellido</text><text x="560" y="458" class="small">Acciones</text>
+  </g>
+
+  <g transform="translate(60,720)">
+    <text x="0" y="-18" class="h2">Reservas</text>
+    <rect class="screen" width="760" height="500" rx="10"/>
+    <rect class="nav" width="760" height="58" rx="10"/>
+    <text x="24" y="36" class="white">Voley Diloz</text><text x="180" y="36" class="white">Dashboard</text><text x="285" y="36" class="white">Clientes</text><text x="370" y="36" class="white">Reservas</text>
+    <text x="24" y="105" class="h1">Reservas</text>
+    <rect class="card" x="24" y="132" width="712" height="330" rx="10"/>
+    <text x="44" y="164" class="h2">Listado de reservas</text>
+    <rect class="input" x="486" y="144" width="170" height="34" rx="8"/><text x="500" y="166" class="small">Buscar</text>
+    <rect class="outline" x="664" y="144" width="52" height="34" rx="8"/><text x="676" y="166" class="text">Ir</text>
+    <line x1="44" y1="205" x2="716" y2="205" stroke="#d9e6f2"/>
+    <text x="52" y="194" class="small">ID</text><text x="100" y="194" class="small">Cliente</text><text x="220" y="194" class="small">Cancha</text><text x="330" y="194" class="small">Fecha</text><text x="430" y="194" class="small">Horario</text><text x="540" y="194" class="small">Estado</text><text x="635" y="194" class="small">Acciones</text>
+    <line x1="44" y1="252" x2="716" y2="252" stroke="#d9e6f2"/>
+    <text x="52" y="235" class="text">20</text><text x="100" y="235" class="text">Cliente Prueba</text><text x="220" y="235" class="text">Arena 2</text><text x="330" y="235" class="text">2026-06-18</text><text x="430" y="235" class="text">10:00-12:00</text>
+    <rect class="danger" x="540" y="218" width="82" height="24" rx="12"/><text x="552" y="235" class="small">CANCELADA</text>
+    <rect class="outline" x="635" y="216" width="54" height="26" rx="8"/><text x="647" y="234" class="small">Editar</text>
+  </g>
+
+  <g transform="translate(880,770)">
+    <text x="0" y="-18" class="h2">Modal editar reserva</text>
+    <rect fill="#0b1729" opacity=".18" width="640" height="430" rx="10"/>
+    <rect class="card" x="60" y="45" width="520" height="335" rx="12"/>
+    <text x="88" y="86" class="h2">Editar reserva</text>
+    <rect class="input" x="88" y="115" width="205" height="38" rx="8"/><text x="102" y="139" class="small">Cliente</text>
+    <rect class="input" x="320" y="115" width="205" height="38" rx="8"/><text x="334" y="139" class="small">DNI</text>
+    <rect class="input" x="88" y="170" width="205" height="38" rx="8"/><text x="102" y="194" class="small">Cancha</text>
+    <rect class="input" x="320" y="170" width="205" height="38" rx="8"/><text x="334" y="194" class="small">Fecha</text>
+    <rect class="input" x="88" y="225" width="135" height="38" rx="8"/><text x="102" y="249" class="small">Inicio</text>
+    <rect class="input" x="242" y="225" width="135" height="38" rx="8"/><text x="256" y="249" class="small">Fin</text>
+    <rect class="input" x="396" y="225" width="129" height="38" rx="8"/><text x="410" y="249" class="small">Adelanto</text>
+    <rect class="input" x="88" y="280" width="205" height="38" rx="8"/><text x="102" y="304" class="small">Estado: CANCELADA</text>
+    <text x="88" y="338" class="small">Al cancelar antes de la fecha, el horario queda libre.</text>
+    <rect class="outline" x="332" y="332" width="86" height="32" rx="8"/><text x="350" y="353" class="text">Cancelar</text>
+    <rect class="primary" x="430" y="332" width="95" height="32" rx="8"/><text x="445" y="353" class="white">Guardar</text>
+  </g>
+</svg>

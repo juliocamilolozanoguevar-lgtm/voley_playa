@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("btnActualizarReservas").addEventListener("click", () => listarReservas(document.getElementById("buscadorReservas").value.trim()));
     document.getElementById("btnGuardarEdicionReserva").addEventListener("click", guardarEdicionReserva);
 
-    ["editarCanchaId", "editarFecha", "editarHoraInicio", "editarHoraFin"].forEach((id) => {
+    ["editarCanchaId", "editarFecha", "editarHoraInicio", "editarHoraFin", "editarEstadoReserva"].forEach((id) => {
         document.getElementById(id).addEventListener("change", validarDisponibilidadEdicion);
     });
 
@@ -197,10 +197,17 @@ async function validarDisponibilidadEdicion() {
     const fecha = document.getElementById("editarFecha").value;
     const horaInicio = document.getElementById("editarHoraInicio").value;
     const horaFin = document.getElementById("editarHoraFin").value;
+    const estadoReserva = document.getElementById("editarEstadoReserva").value;
     const estado = document.getElementById("estadoEdicionHorario");
 
     if (!reservaId || !canchaId || !fecha || !horaInicio || !horaFin) {
         estado.textContent = "";
+        return;
+    }
+
+    if (estadoReserva === "CANCELADA") {
+        estado.textContent = "Al guardar como cancelada, este horario quedara libre si la reserva aun no llega a su fecha.";
+        estado.className = "text-warning fw-semibold";
         return;
     }
 

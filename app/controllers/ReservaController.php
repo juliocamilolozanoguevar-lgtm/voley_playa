@@ -134,7 +134,13 @@ class ReservaController extends Controller
             $this->json(['message' => 'Reserva no encontrada'], 404);
         }
 
-        if ($reservaModel->hasConflict($validated['canchaId'], $validated['fecha'], $validated['horaInicio'], $validated['horaFin'], $reservaId)) {
+        $estadoActual = strtoupper((string) ($reservaActual['estadoReserva'] ?? ''));
+        $estadoNuevo = strtoupper($validated['estadoReserva']);
+        if ($estadoNuevo === 'CANCELADA' && $estadoActual !== 'CANCELADA' && date('Y-m-d') >= (string) $reservaActual['fecha']) {
+            $this->json(['message' => 'Solo se puede cancelar una reserva antes de la fecha programada'], 422);
+        }
+
+        if ($estadoNuevo !== 'CANCELADA' && $reservaModel->hasConflict($validated['canchaId'], $validated['fecha'], $validated['horaInicio'], $validated['horaFin'], $reservaId)) {
             $this->json(['message' => 'La cancha no esta disponible en ese horario'], 409);
         }
 
@@ -214,7 +220,7 @@ class ReservaController extends Controller
                 'fecha' => $fecha,
                 'horaInicio' => $horaInicio,
                 'horaFin' => $horaFin,
-                'estadoReserva' => $estadoReserva !== '' ? $estadoReserva : 'RESERVADA',
+                'estadoReserva' => $estadoReserva !== '' ? strtoupper($estadoReserva) : 'RESERVADA',
                 'estado' => $estado !== '' ? $estado : 'ACTIVA',
                 'monto' => $monto,
             ];
@@ -240,7 +246,7 @@ class ReservaController extends Controller
             'fecha' => $fecha,
             'horaInicio' => $horaInicio,
             'horaFin' => $horaFin,
-            'estadoReserva' => $estadoReserva !== '' ? $estadoReserva : 'RESERVADA',
+            'estadoReserva' => $estadoReserva !== '' ? strtoupper($estadoReserva) : 'RESERVADA',
             'estado' => $estado !== '' ? $estado : 'ACTIVA',
             'monto' => $monto,
         ];

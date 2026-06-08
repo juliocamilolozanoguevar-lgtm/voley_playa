@@ -154,14 +154,15 @@ class Reserva extends BaseModel
 
     public function hasConflict(int $canchaId, string $fecha, string $horaInicio, string $horaFin, ?int $ignoreReservaId = null): bool
     {
-        $sql = '
+        $sql = "
             SELECT COUNT(*) 
             FROM reserva
             WHERE id_cancha = :canchaId
               AND fecha = :fecha
+              AND UPPER(estado_reserva) <> 'CANCELADA'
               AND :horaInicio < hora_fin
               AND :horaFin > hora_inicio
-        ';
+        ";
 
         $params = [
             'canchaId' => $canchaId,
@@ -183,12 +184,14 @@ class Reserva extends BaseModel
 
     public function availableSlots(int $canchaId, string $fecha): array
     {
-        $stmt = $this->db->prepare('
+        $stmt = $this->db->prepare("
             SELECT hora_inicio, hora_fin
             FROM reserva
-            WHERE id_cancha = :canchaId AND fecha = :fecha
+            WHERE id_cancha = :canchaId
+              AND fecha = :fecha
+              AND UPPER(estado_reserva) <> 'CANCELADA'
             ORDER BY hora_inicio ASC
-        ');
+        ");
         $stmt->execute([
             'canchaId' => $canchaId,
             'fecha' => $fecha,

@@ -14,10 +14,20 @@ class Database
         $charset = (string) Config::get('db.charset', 'utf8mb4');
         $dsn = "mysql:host={$host};port={$port};dbname={$name};charset={$charset}";
 
-        $this->pdo = new PDO($dsn, (string) Config::get('db.user', 'root'), (string) Config::get('db.pass', ''), [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
+        try {
+            $this->pdo = new PDO($dsn, (string) Config::get('db.user', 'root'), (string) Config::get('db.pass', ''), [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+        } catch (PDOException $exception) {
+            throw new RuntimeException(
+                'No se pudo conectar con MySQL. Verifique que MySQL de XAMPP este iniciado y que la base de datos "'
+                . $name
+                . '" exista.',
+                0,
+                $exception
+            );
+        }
     }
 
     public static function instance(): self

@@ -485,7 +485,7 @@ async function guardarClienteYReserva(event) {
         });
 
         limpiarFormulario(false);
-        showMessage("mensajeCliente", clienteSeleccionado ? "Nueva reserva registrada correctamente para el cliente seleccionado" : "Cliente y reserva guardados correctamente", "success");
+        showMessage("mensajeCliente", obtenerClienteSeleccionado() ? "Nueva reserva registrada correctamente para el cliente seleccionado" : "Cliente y reserva guardados correctamente", "success");
         await listarClientes();
         await consultarDisponibilidad();
     } catch (error) {
