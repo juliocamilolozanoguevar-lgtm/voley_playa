@@ -74,7 +74,9 @@ class Reserva extends BaseModel
 
     public function countAll(): int
     {
-        return (int) $this->db->query('SELECT COUNT(*) FROM reserva')->fetchColumn();
+        return (int) $this->db
+            ->query("SELECT COUNT(*) FROM reserva WHERE UPPER(estado_reserva) <> 'CANCELADA'")
+            ->fetchColumn();
     }
 
     public function create(array $data): array
