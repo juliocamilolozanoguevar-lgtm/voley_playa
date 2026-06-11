@@ -29,7 +29,7 @@ Implementar un sistema web centralizado que automatice el flujo de reservas, val
 
 ### Requisitos No Funcionales
 - **Seguridad:** Protección de rutas y validación de datos del lado del servidor.
-- **Interfaz (UI):** Diseño responsivo y amigable basado en Bootstrap 5.
+- **Interfaz (UI):** Diseño responsivo y amigable.
 - **Rendimiento:** Consultas optimizadas para una respuesta inmediata.
 
 ## 🏗️ 5. Arquitectura del Proyecto
