@@ -29,7 +29,7 @@ Implementar un sistema web centralizado que automatice el flujo de reservas, val
 
 ### Requisitos No Funcionales
 - **Seguridad:** Protección de rutas y validación de datos del lado del servidor.
-- **Interfaz (UI):** Diseño responsivo y amigable basado en Bootstrap 5.
+- **Interfaz (UI):** Diseño responsivo y amigable.
 - **Rendimiento:** Consultas optimizadas para una respuesta inmediata.
 
 ## 🏗️ 5. Arquitectura del Proyecto
@@ -39,7 +39,11 @@ El sistema sigue una estructura profesional de carpetas para garantizar que sea 
 *   `/views`: Interfaces dinámicas con componentes modales.
 *   `/config`: Configuraciones de conexión y variables globales.
 
-## 📸 6. Evidencias del Proyecto
+   ### 6. Diagrama de Modelo Relacional (MR)
+![Modelo Relacional](recursos/Modelo_Relacional.png)
+*Descripción: Este diagrama representa la estructura lógica de los datos. La tabla **Reserva** actúa como eje central, conectando a los **Clientes** con las **Canchas**. La entidad **Usuario** se mantiene independiente para fines estrictos de autenticación, asegurando que solo el personal autorizado gestione la información .*
+
+## 📸 7. Evidencias del Proyecto
 ### Situación Actual (Problema)
 ![Problematica; organizacion en papel](./recursos/problematica.png)
 
