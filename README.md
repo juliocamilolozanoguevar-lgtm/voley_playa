@@ -7,10 +7,10 @@ Este proyecto es una solución web diseñada para digitalizar y optimizar la adm
 
 ![Modelo Relacional](recursos/Figma.png)
 
-## 📖 1. Descripción del Negocio
+## 📖 2. Descripción del Negocio
 **VOLEY PLAYA DILOZ** se dedica a brindar espacios deportivos para la práctica de vóley playa. Ante el crecimiento de la demanda, el negocio busca profesionalizar su gestión para ofrecer una mejor experiencia al cliente y un control total sobre sus operaciones diarias.
 
-## ⚠️ 2. El Problema y la Solución
+## ⚠️ 3. El Problema y la Solución
 ### El Problema
 Actualmente, la gestión se realiza en cuadernos físicos, lo que provoca:
 *   **Desorden:** Errores en el registro de fechas y duplicidad de reservas.
@@ -20,12 +20,12 @@ Actualmente, la gestión se realiza en cuadernos físicos, lo que provoca:
 ### La Solución
 Implementar un sistema web centralizado que automatice el flujo de reservas, valide la disponibilidad de canchas instantáneamente y mantenga un historial preciso de clientes y transacciones financieras.
 
-## 🛠️ 3. Preanálisis Técnico
+## 🛠️ 4. Preanálisis Técnico
 *   **Tecnologías:** PHP (Backend), MySQL (Base de datos), Bootstrap 5 (Frontend) y XAMPP (Servidor local).
 *   **Viabilidad:** Bajo costo de implementación y alta eficiencia en el procesamiento de datos.
 *   **Alcance:** El sistema permite la gestión completa del ciclo de vida de una reserva (crear, modificar, cancelar) y el registro de pagos, sin incluir pasarelas de pago en línea en esta fase inicial.
 
-## 📊 4. Análisis de Requerimientos
+## 📊 5. Análisis de Requerimientos
 ### Requisitos Funcionales
 - [x] **Autenticación:** Inicio de sesión seguro para el administrador.
 - [x] **Gestión de Entidades:** CRUD de clientes, canchas y reservas.
@@ -37,18 +37,18 @@ Implementar un sistema web centralizado que automatice el flujo de reservas, val
 - **Interfaz (UI):** Diseño responsivo y amigable.
 - **Rendimiento:** Consultas optimizadas para una respuesta inmediata.
 
-## 🏗️ 5. Arquitectura del Proyecto
+## 🏗️ 6. Arquitectura del Proyecto
 El sistema sigue una estructura profesional de carpetas para garantizar que sea mantenible y escalable, aplicando los conceptos de **Arquitectura Multicapa**:
 *   `/models`: Gestión de la lógica de datos.
 *   `/controllers`: Procesamiento de peticiones HTTP.
 *   `/views`: Interfaces dinámicas con componentes modales.
 *   `/config`: Configuraciones de conexión y variables globales.
 
-   ### 6. Diagrama de Modelo Relacional (MR)
+   ### 7. Diagrama de Modelo Relacional (MR)
 ![Modelo Relacional](recursos/Modelo_Relacional.png)
 *Descripción: Este diagrama representa la estructura lógica de los datos. La tabla **Reserva** actúa como eje central, conectando a los **Clientes** con las **Canchas**. La entidad **Usuario** se mantiene independiente para fines estrictos de autenticación, asegurando que solo el personal autorizado gestione la información .*
 
-## 📸 7. Evidencias del Proyecto
+## 📸 8. Evidencias del Proyecto
 ### Situación Actual (Problema)
 ![Problematica; organizacion en papel](./recursos/problematica.png)
 
