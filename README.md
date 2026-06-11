@@ -2,7 +2,7 @@
 
 Este proyecto es una solución web diseñada para digitalizar y optimizar la administración del alquiler de canchas de vóley playa, reemplazando los métodos de registro manuales por una plataforma eficiente, segura y organizada.
 ## 📖 1. figma
-![Este es mi figma](https://www.figma.com/design/JAQBLTlRiBYi7p9sboJuzj/voley_playa_Diloz?node-id=75-2&p=f&t=QfBWplggfQkr3nYy-0)
+[Visitar sitio web](https://www.figma.com/design/JAQBLTlRiBYi7p9sboJuzj/voley_playa_Diloz?node-id=75-2&p=f&t=QfBWplggfQkr3nYy-0)
 ![Modelo Relacional](recursos/Figma.png)
 
 ## 📖 1. Descripción del Negocio
