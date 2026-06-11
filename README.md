@@ -1,6 +1,8 @@
 # 🏐 VOLEY PLAYA DILOZ - Sistema de Gestión de Reservas
 
 Este proyecto es una solución web diseñada para digitalizar y optimizar la administración del alquiler de canchas de vóley playa, reemplazando los métodos de registro manuales por una plataforma eficiente, segura y organizada.
+## 📖 1. figma
+![Modelo Relacional](recursos/Figma.png)
 
 ## 📖 1. Descripción del Negocio
 **VOLEY PLAYA DILOZ** se dedica a brindar espacios deportivos para la práctica de vóley playa. Ante el crecimiento de la demanda, el negocio busca profesionalizar su gestión para ofrecer una mejor experiencia al cliente y un control total sobre sus operaciones diarias.
